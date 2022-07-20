@@ -1,6 +1,6 @@
 # ViteJS + React + HardHat Burger
 
-Lets try a TKTS decentralized project
+Lets try a Dransfer project
 
 hardhat cmd :
 

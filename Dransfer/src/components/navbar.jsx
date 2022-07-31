@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { Navbar, Nav, Button, Container } from "react-bootstrap";
-import market from "../assets/Talking_ben.webp";
 
 const Navigation = ({ web3Handler, account }) => {
   return (
-    <Navbar expand="lg" bg="secondary" variant="dark">
-      <Container>
-        <Navbar.Collapse id="responsive-navbar-nav">
+    <>
+      <Navbar expand="lg" bg="dark" variant="dark">
+        <Container>
+          <Navbar.Brand href="#">Dransfer</Navbar.Brand>
           <Nav>
             {account ? (
               <Nav.Link
@@ -25,9 +25,9 @@ const Navigation = ({ web3Handler, account }) => {
               </Button>
             )}
           </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+        </Container>
+      </Navbar>
+    </>
   );
 };
 

@@ -1,7 +1,8 @@
-import { useState } from "react";
-import reactLogo from "./assets/Talking_ben.webp";
+import { useState, useEffect } from "react";
+import reactLogo from "./assets/capybara.svg";
 import "./App.css";
 import Navigation from "./components/navbar";
+import Dropzone from "./components/getFile";
 
 //import getWeb3 from "./getWeb3.js";
 import { ethers } from "ethers";
@@ -29,6 +30,10 @@ function App() {
     });
   };
 
+  useEffect(() => {
+    web3Handler();
+  });
+
   return (
     <div className="App">
       <>
@@ -36,14 +41,13 @@ function App() {
       </>
 
       <div>
-        <a href="#">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <img src={reactLogo} className="logo react" alt="React logo" />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
+      <>
+        <Dropzone />
+      </>
+      <div>
         <p>
-          Account : {account} <br />
           <code>Dransfer by KAM</code>
         </p>
       </div>

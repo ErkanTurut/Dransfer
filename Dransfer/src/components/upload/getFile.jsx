@@ -1,6 +1,7 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
+import singleFileUpload from "./singleFileUpload";
 
 const getColor = (props) => {
   if (props.isDragAccept) {
@@ -34,6 +35,15 @@ const Container = styled.div`
 `;
 
 const Dropzone = () => {
+  const [files, setFiles] = useState([]);
+
+  /*
+  const onDrop = useCallback((acceptedFiles) => {
+    const filesMap = acceptedFiles.map((file) => ({ file, errors: [] }));
+    setFiles((curr) => [curr, ...filesMap]);
+  }, []);
+  */
+
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((file) => {
       const reader = new FileReader();
@@ -42,10 +52,14 @@ const Dropzone = () => {
       reader.onerror = () => console.log("file reading has failed");
       reader.onload = () => {
         console.log(file);
+        // Do whatever you want with the file contents
+        const filesMap = acceptedFiles.map((file) => file);
+        setFiles((curr) => [curr, ...filesMap]);
       };
       reader.readAsArrayBuffer(file);
     });
   }, []);
+  console.log(files);
 
   const {
     getRootProps,
@@ -56,6 +70,8 @@ const Dropzone = () => {
     isDragActive,
   } = useDropzone({ onDrop });
 
+  //console.log(files);
+
   return (
     <div className="container">
       <Container {...getRootProps({ isFocused, isDragAccept, isDragReject })}>
@@ -65,6 +81,12 @@ const Dropzone = () => {
         ) : (
           <p>Drag 'n' drop some files here, or click to select files</p>
         )}
+        <aside>
+          <h4>Files</h4>
+          {files.map((fileWrapper) => (
+            <singleFileUpload file={fileWrapper.file} />
+          ))}
+        </aside>
       </Container>
     </div>
   );

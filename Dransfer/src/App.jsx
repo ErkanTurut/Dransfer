@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import reactLogo from "./assets/capybara.svg";
 import "./App.css";
 import Navigation from "./components/navbar";
-import Dropzone from "./components/getFile";
+import Dropzone from "./components/upload/getFile";
 
 //import getWeb3 from "./getWeb3.js";
 import { ethers } from "ethers";
@@ -29,10 +29,6 @@ function App() {
       await web3Handler();
     });
   };
-
-  useEffect(() => {
-    web3Handler();
-  });
 
   return (
     <div className="App">

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
-import singleFileUpload from "./singleFileUpload";
+import "../../css/getFile.css";
 
 const getColor = (props) => {
   if (props.isDragAccept) {
@@ -37,12 +37,20 @@ const Container = styled.div`
 const Dropzone = () => {
   const [files, setFiles] = useState([]);
 
-  /*
-  const onDrop = useCallback((acceptedFiles) => {
-    const filesMap = acceptedFiles.map((file) => ({ file, errors: [] }));
-    setFiles((curr) => [curr, ...filesMap]);
-  }, []);
-  */
+  const fileSize = (size) => {
+    if (size == 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    const i = Math.floor(Math.log(size) / Math.log(k));
+    return parseFloat((size / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  const fileType = (fileName) => {
+    return (
+      fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length) ||
+      fileName
+    );
+  };
 
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((file) => {
@@ -54,12 +62,11 @@ const Dropzone = () => {
         console.log(file);
         // Do whatever you want with the file contents
         const filesMap = acceptedFiles.map((file) => file);
-        setFiles((curr) => [curr, ...filesMap]);
+        setFiles((curr) => [...curr, ...filesMap]);
       };
       reader.readAsArrayBuffer(file);
     });
   }, []);
-  console.log(files);
 
   const {
     getRootProps,
@@ -70,8 +77,6 @@ const Dropzone = () => {
     isDragActive,
   } = useDropzone({ onDrop });
 
-  //console.log(files);
-
   return (
     <div className="container">
       <Container {...getRootProps({ isFocused, isDragAccept, isDragReject })}>
@@ -81,13 +86,25 @@ const Dropzone = () => {
         ) : (
           <p>Drag 'n' drop some files here, or click to select files</p>
         )}
-        <aside>
-          <h4>Files</h4>
-          {files.map((fileWrapper) => (
-            <singleFileUpload file={fileWrapper.file} />
-          ))}
-        </aside>
       </Container>
+      <div className="file-display-container">
+        {files.map((data, i) => (
+          <div className="fileStatusBar" key={i}>
+            <div>
+              <div className="file-type-logo"></div>
+              <div className="file-type">{fileType(data.name)}</div>
+              <span className={`file-name ${data.invalid ? "file-error" : ""}`}>
+                {data.name}
+              </span>
+              <span className="file-size">({fileSize(data.size)})</span>{" "}
+              {data.invalid && (
+                <span className="file-error-message">({errorMessage})</span>
+              )}
+            </div>
+            <div className="file-remove">X</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

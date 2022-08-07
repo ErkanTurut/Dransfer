@@ -1,7 +1,10 @@
 import { useCallback, useMemo, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
-import "../../css/getFile.css";
+import ListGroup from "react-bootstrap/ListGroup";
+import Button from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
+import Alert from "react-bootstrap/Alert";
 
 const getColor = (props) => {
   if (props.isDragAccept) {
@@ -36,6 +39,8 @@ const Container = styled.div`
 
 const Dropzone = () => {
   const [files, setFiles] = useState([]);
+  const [validFiles, setValidFiles] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const fileSize = (size) => {
     if (size == 0) return "0 Bytes";
@@ -52,21 +57,47 @@ const Dropzone = () => {
     );
   };
 
+  const validateFile = (file) => {
+    const invalidTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/x-icon",
+    ];
+    if (invalidTypes.indexOf(file.type) != -1) {
+      return false;
+    }
+    return true;
+  };
+
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((file) => {
       const reader = new FileReader();
-
       reader.onabort = () => console.log("file reading was aborted");
       reader.onerror = () => console.log("file reading has failed");
       reader.onload = () => {
-        console.log(file);
-        // Do whatever you want with the file contents
-        const filesMap = acceptedFiles.map((file) => file);
-        setFiles((curr) => [...curr, ...filesMap]);
+        if (validateFile(file)) {
+          const filesMap = acceptedFiles.map((file) => file);
+          setFiles((curr) => [...curr, ...filesMap]);
+        } else {
+          setErrorMessage(`${file.name} File type not permitted`);
+        }
       };
       reader.readAsArrayBuffer(file);
     });
   }, []);
+
+  const removeFile = (name) => {
+    const validFileIndex = validFiles.findIndex((e) => e.name === name);
+    validFiles.splice(validFileIndex, 1);
+    // update validFiles array
+    setValidFiles([...validFiles]);
+    const filesIndex = files.findIndex((e) => e.name === name);
+    files.splice(filesIndex, 1);
+    // update selectedFiles array
+    setFiles([...files]);
+  };
 
   const {
     getRootProps,
@@ -76,6 +107,20 @@ const Dropzone = () => {
     isDragReject,
     isDragActive,
   } = useDropzone({ onDrop });
+
+  console.log(validFiles);
+
+  useEffect(() => {
+    let filteredArray = files.reduce((file, current) => {
+      const x = file.find((item) => item.name === current.name);
+      if (!x) {
+        return file.concat([current]);
+      } else {
+        return file;
+      }
+    }, []);
+    setValidFiles([...filteredArray]);
+  }, [files]);
 
   return (
     <div className="container">
@@ -87,26 +132,64 @@ const Dropzone = () => {
           <p>Drag 'n' drop some files here, or click to select files</p>
         )}
       </Container>
-      <div className="file-display-container">
-        {files.map((data, i) => (
-          <div className="fileStatusBar" key={i}>
-            <div>
-              <div className="file-type-logo"></div>
-              <div className="file-type">{fileType(data.name)}</div>
-              <span className={`file-name ${data.invalid ? "file-error" : ""}`}>
-                {data.name}
-              </span>
-              <span className="file-size">({fileSize(data.size)})</span>{" "}
-              {data.invalid && (
-                <span className="file-error-message">({errorMessage})</span>
-              )}
-            </div>
-            <div className="file-remove">X</div>
-          </div>
-        ))}
-      </div>
+
+      <Row
+        as="div"
+        className="overflow-auto"
+        style={{
+          maxWidth: "600px",
+          margin: "0 auto",
+          padding: "20px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          maxHeight: "300px",
+          marginTop: "10px",
+        }}
+      >
+        <ListGroup as="ol" variant="flush" style={{ marginTop: "10px" }}>
+          {validFiles.map((data, i) => (
+            <ListGroup.Item
+              as="li"
+              className="d-flex justify-content-between align-items-start shadow p-3 mb-2 bg-white rounded"
+              key={i}
+              style={{ textAlign: "left" }}
+            >
+              <div className="ms-2 me-auto">
+                <div className="fw-bold">{data.name}</div>
+                {fileSize(data.size)}
+              </div>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={() => removeFile(data.name)}
+              >
+                X
+              </Button>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      </Row>
     </div>
   );
 };
 
 export default Dropzone;
+/*
+<div className="fileStatusBar" key={i}>
+              <div>
+                <div className="file-type-logo"></div>
+                <div className="file-type">{fileType(data.name)}</div>
+                <span
+                  className={`file-name ${data.invalid ? "file-error" : ""}`}
+                >
+                  {data.name}
+                </span>
+                <span className="file-size">({fileSize(data.size)})</span>{" "}
+                {data.invalid && (
+                  <span className="file-error-message">({errorMessage})</span>
+                )}
+              </div>
+              <div className="file-remove">X</div>
+            </div>
+*/

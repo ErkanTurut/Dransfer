@@ -58,6 +58,7 @@ const Dropzone = () => {
   };
 
   const validateFile = (file) => {
+    console.log(file);
     const invalidTypes = [
       "image/jpeg",
       "image/jpg",
@@ -71,29 +72,23 @@ const Dropzone = () => {
     return true;
   };
 
-  const onDrop = useCallback((acceptedFiles) => {
-    acceptedFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onabort = () => console.log("file reading was aborted");
-      reader.onerror = () => console.log("file reading has failed");
-      reader.onload = () => {
-        if (validateFile(file)) {
-          const filesMap = acceptedFiles.map((file) => file);
-          setFiles((curr) => [...curr, ...filesMap]);
-        } else {
-          setErrorMessage(`${file.name} File type not permitted`);
-        }
-      };
-      reader.readAsArrayBuffer(file);
-    });
-  }, []);
+  const onDrop = useCallback((files) => {
+    //console.log(files);
 
+    const reader = new window.FileReader();
+    reader.readAsArrayBuffer(files[0]);
+    reader.onabort = () => console.log("file reading was aborted");
+    reader.onerror = () => console.log("file reading has failed");
+    reader.onloadend = () => {
+      const filesMap = files.map((file) => ({ file, result: reader.result }));
+      setFiles((curr) => [...curr, ...filesMap]);
+    };
+  }, []);
+  //console.log(files);
   const removeFile = (name) => {
-    const validFileIndex = validFiles.findIndex((e) => e.name === name);
-    validFiles.splice(validFileIndex, 1);
-    // update validFiles array
-    setValidFiles([...validFiles]);
+    console.log(files);
     const filesIndex = files.findIndex((e) => e.name === name);
+
     files.splice(filesIndex, 1);
     // update selectedFiles array
     setFiles([...files]);
@@ -108,11 +103,15 @@ const Dropzone = () => {
     isDragActive,
   } = useDropzone({ onDrop });
 
-  console.log(validFiles);
+  //console.log(files);
 
   useEffect(() => {
     let filteredArray = files.reduce((file, current) => {
-      const x = file.find((item) => item.name === current.name);
+      console.log(current.result);
+      console.log(...file);
+
+      const x = file.find((...item) => item.result === current.result);
+      console.log(x);
       if (!x) {
         return file.concat([current]);
       } else {
@@ -148,7 +147,7 @@ const Dropzone = () => {
         }}
       >
         <ListGroup as="ol" variant="flush" style={{ marginTop: "10px" }}>
-          {validFiles.map((data, i) => (
+          {files.map((data, i) => (
             <ListGroup.Item
               as="li"
               className="d-flex justify-content-between align-items-start shadow p-3 mb-2 bg-white rounded"
@@ -156,13 +155,13 @@ const Dropzone = () => {
               style={{ textAlign: "left" }}
             >
               <div className="ms-2 me-auto">
-                <div className="fw-bold">{data.name}</div>
-                {fileSize(data.size)}
+                <div className="fw-bold">{data.file.name}</div>
+                {fileSize(data.file.size)}
               </div>
               <Button
                 variant="danger"
                 size="sm"
-                onClick={() => removeFile(data.name)}
+                onClick={() => removeFile(data.file.name)}
               >
                 X
               </Button>

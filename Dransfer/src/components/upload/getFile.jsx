@@ -8,11 +8,14 @@ import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
 import capybara from "../../assets/capybara.svg";
 
+const maxSize = 10000000;
+
+//1000000000
 const getColor = (props) => {
   if (props.isDragAccept) {
     return "#00e676";
   }
-  if (props.isDragReject) {
+  if (props.isDragReject || props.totalSize > maxSize) {
     return "#ff1744";
   }
   if (props.isFocused) {
@@ -51,6 +54,11 @@ const Dropzone = () => {
     return parseFloat((size / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
+  let totalSize = 0;
+  files.map((data) => {
+    totalSize += data.size;
+  });
+
   const fileType = (fileName) => {
     return (
       fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length) ||
@@ -59,14 +67,8 @@ const Dropzone = () => {
   };
 
   const validateFile = (file) => {
-    console.log(file);
-    const invalidTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/webp",
-      "image/x-icon",
-    ];
+    //console.log(file);
+    const invalidTypes = [];
     if (invalidTypes.indexOf(file.type) != -1) {
       return false;
     }
@@ -79,15 +81,21 @@ const Dropzone = () => {
       reader.readAsArrayBuffer(file);
       reader.onabort = () => console.log("file reading was aborted");
       reader.onerror = () => console.log("file reading has failed");
+      console.log(totalSize + file.size, maxSize);
       reader.onloadend = async () => {
-        if (validateFile(file)) {
-          file.result = reader.result;
+        if (totalSize + file.size > maxSize) {
+          console.log("ok");
+          file.error = "You have exceeded the maximum size of 10Mb";
           //const filesMap = await acceptedFiles.map((file) => file);
-          setFiles((curr) => [...curr, file]);
-        } else {
+          setErrorFiles((curr) => [...curr, file]);
+        } else if (!validateFile(file)) {
           file.error = "This file type is not supported.";
           //const filesMap = await acceptedFiles.map((file) => file);
           setErrorFiles((curr) => [...curr, file]);
+        } else {
+          file.result = reader.result;
+          //const filesMap = await acceptedFiles.map((file) => file);
+          setFiles((curr) => [...curr, file]);
         }
       };
     });
@@ -114,30 +122,12 @@ const Dropzone = () => {
     isDragAccept,
     isDragReject,
     isDragActive,
-  } = useDropzone({ onDrop });
-
-  /*
-  useEffect(() => {
-    let filteredArray = files.reduce((file, current) => {
-      console.log(current.result);
-      console.log(...file);
-
-      const x = file.find((...item) => item.result === current.result);
-      console.log(x);
-      if (!x) {
-        return file.concat([current]);
-      } else {
-        return file;
-      }
-    }, []);
-    setValidFiles([...filteredArray]);
-  }, [files]);
-*/
+  } = useDropzone({ onDrop, disabled: totalSize > maxSize ? true : false });
 
   return (
     <div className="container">
       <ToastContainer
-        className="p-2  overflow-hidden"
+        className="p-2  overflow-hidden "
         position="top-start"
         style={{
           maxHeight: "300px",
@@ -164,13 +154,21 @@ const Dropzone = () => {
         ))}
       </ToastContainer>
 
-      <Container {...getRootProps({ isFocused, isDragAccept, isDragReject })}>
+      <Container
+        {...getRootProps({
+          isFocused,
+          isDragAccept,
+          isDragReject,
+          totalSize,
+        })}
+      >
         <input {...getInputProps({})} />
         {isDragActive ? (
           <p>Drop the files here ...</p>
         ) : (
           <p>Drag 'n' drop some files here, or click to select files</p>
         )}
+        {fileSize(totalSize)}
       </Container>
 
       <Row
@@ -215,21 +213,3 @@ const Dropzone = () => {
 };
 
 export default Dropzone;
-/*
-<div className="fileStatusBar" key={i}>
-              <div>
-                <div className="file-type-logo"></div>
-                <div className="file-type">{fileType(data.name)}</div>
-                <span
-                  className={`file-name ${data.invalid ? "file-error" : ""}`}
-                >
-                  {data.name}
-                </span>
-                <span className="file-size">({fileSize(data.size)})</span>{" "}
-                {data.invalid && (
-                  <span className="file-error-message">({errorMessage})</span>
-                )}
-              </div>
-              <div className="file-remove">X</div>
-            </div>
-*/

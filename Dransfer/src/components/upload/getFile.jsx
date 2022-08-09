@@ -4,7 +4,9 @@ import styled from "styled-components";
 import ListGroup from "react-bootstrap/ListGroup";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
-import Alert from "react-bootstrap/Alert";
+import Toast from "react-bootstrap/Toast";
+import ToastContainer from "react-bootstrap/ToastContainer";
+import capybara from "../../assets/capybara.svg";
 
 const getColor = (props) => {
   if (props.isDragAccept) {
@@ -39,8 +41,7 @@ const Container = styled.div`
 
 const Dropzone = () => {
   const [files, setFiles] = useState([]);
-  const [validFiles, setValidFiles] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorFiles, setErrorFiles] = useState([]);
 
   const fileSize = (size) => {
     if (size == 0) return "0 Bytes";
@@ -63,7 +64,7 @@ const Dropzone = () => {
       "image/jpeg",
       "image/jpg",
       "image/png",
-      "image/gif",
+      "image/webp",
       "image/x-icon",
     ];
     if (invalidTypes.indexOf(file.type) != -1) {
@@ -72,26 +73,38 @@ const Dropzone = () => {
     return true;
   };
 
-  const onDrop = useCallback((files) => {
-    //console.log(files);
-
-    const reader = new window.FileReader();
-    reader.readAsArrayBuffer(files[0]);
-    reader.onabort = () => console.log("file reading was aborted");
-    reader.onerror = () => console.log("file reading has failed");
-    reader.onloadend = () => {
-      const filesMap = files.map((file) => ({ file, result: reader.result }));
-      setFiles((curr) => [...curr, ...filesMap]);
-    };
+  const onDrop = useCallback((acceptedFiles) => {
+    acceptedFiles.forEach((file) => {
+      const reader = new window.FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onabort = () => console.log("file reading was aborted");
+      reader.onerror = () => console.log("file reading has failed");
+      reader.onloadend = async () => {
+        if (validateFile(file)) {
+          file.result = reader.result;
+          //const filesMap = await acceptedFiles.map((file) => file);
+          setFiles((curr) => [...curr, file]);
+        } else {
+          file.error = "This file type is not supported.";
+          //const filesMap = await acceptedFiles.map((file) => file);
+          setErrorFiles((curr) => [...curr, file]);
+        }
+      };
+    });
   }, []);
-  //console.log(files);
-  const removeFile = (name) => {
-    console.log(files);
-    const filesIndex = files.findIndex((e) => e.name === name);
 
-    files.splice(filesIndex, 1);
+  const removeFile = (name) => {
+    const selectedFileIndex = files.findIndex((e) => e.name === name);
+    files.splice(selectedFileIndex, 1);
     // update selectedFiles array
     setFiles([...files]);
+  };
+
+  const removeError = (name) => {
+    const selectedFileIndex = errorFiles.findIndex((e) => e.name === name);
+    errorFiles.splice(selectedFileIndex, 1);
+    // update selectedFiles array
+    setErrorFiles([...errorFiles]);
   };
 
   const {
@@ -103,8 +116,7 @@ const Dropzone = () => {
     isDragActive,
   } = useDropzone({ onDrop });
 
-  //console.log(files);
-
+  /*
   useEffect(() => {
     let filteredArray = files.reduce((file, current) => {
       console.log(current.result);
@@ -120,9 +132,38 @@ const Dropzone = () => {
     }, []);
     setValidFiles([...filteredArray]);
   }, [files]);
+*/
 
   return (
     <div className="container">
+      <ToastContainer
+        className="p-2  overflow-hidden"
+        position="top-start"
+        style={{
+          maxHeight: "300px",
+          marginTop: "2em",
+        }}
+      >
+        {errorFiles.map((data) => (
+          <Toast
+            className="m-4"
+            onClose={() => removeError(data.name)}
+            style={{ width: "20em" }}
+          >
+            <Toast.Header className="justify-content-between">
+              <img
+                src={capybara}
+                className="rounded me-2"
+                style={{ height: "3em" }}
+                alt=""
+              />
+              {data.name}
+            </Toast.Header>
+            <Toast.Body>{data.error}</Toast.Body>
+          </Toast>
+        ))}
+      </ToastContainer>
+
       <Container {...getRootProps({ isFocused, isDragAccept, isDragReject })}>
         <input {...getInputProps({})} />
         {isDragActive ? (
@@ -155,13 +196,13 @@ const Dropzone = () => {
               style={{ textAlign: "left" }}
             >
               <div className="ms-2 me-auto">
-                <div className="fw-bold">{data.file.name}</div>
-                {fileSize(data.file.size)}
+                <div className="fw-bold">{data.name}</div>
+                {fileSize(data.size)}
               </div>
               <Button
                 variant="danger"
                 size="sm"
-                onClick={() => removeFile(data.file.name)}
+                onClick={() => removeFile(data.name)}
               >
                 X
               </Button>

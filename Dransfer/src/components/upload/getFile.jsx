@@ -15,7 +15,7 @@ const getColor = (props) => {
   if (props.isDragAccept) {
     return "#00e676";
   }
-  if (props.isDragReject || props.totalSize > maxSize) {
+  if (props.isDragReject || props.totalSize() > maxSize) {
     return "#ff1744";
   }
   if (props.isFocused) {
@@ -29,6 +29,8 @@ const Container = styled.div`
   display: flex;
   max-width: 500px;
   margin: 0 auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
   flex-direction: column;
   align-items: center;
   padding: 20px;
@@ -54,11 +56,6 @@ const Dropzone = () => {
     return parseFloat((size / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  let totalSize = 0;
-  files.map((data) => {
-    totalSize += data.size;
-  });
-
   const fileType = (fileName) => {
     return (
       fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length) ||
@@ -75,15 +72,41 @@ const Dropzone = () => {
     return true;
   };
 
-  const onDrop = useCallback((acceptedFiles) => {
-    acceptedFiles.forEach((file) => {
+  const totalSize = () => {
+    let t = 0;
+    for (let i = 0; i < files.length; i++) {
+      t += files[i].size;
+    }
+    return t;
+  };
+
+  //console.log(totalSize);
+
+  const removeFile = (name) => {
+    totalSize();
+    const selectedFileIndex = files.findIndex((e) => e.name === name);
+    files.splice(selectedFileIndex, 1);
+    // update selectedFiles array
+    setFiles([...files]);
+  };
+
+  const removeError = (name) => {
+    const selectedFileIndex = errorFiles.findIndex((e) => e.name === name);
+    errorFiles.splice(selectedFileIndex, 1);
+    // update selectedFiles array
+    setErrorFiles([...errorFiles]);
+  };
+  //console.log(totalSize());
+
+  const onDrop = (acceptedFiles) => {
+    acceptedFiles.forEach(async (file) => {
       const reader = new window.FileReader();
       reader.readAsArrayBuffer(file);
       reader.onabort = () => console.log("file reading was aborted");
       reader.onerror = () => console.log("file reading has failed");
-      console.log(totalSize + file.size, maxSize);
       reader.onloadend = async () => {
-        if (totalSize + file.size > maxSize) {
+        //console.log(totalSize, file.size, maxSize);
+        if (totalSize() + file.size > maxSize) {
           console.log("ok");
           file.error = "You have exceeded the maximum size of 10Mb";
           //const filesMap = await acceptedFiles.map((file) => file);
@@ -99,20 +122,6 @@ const Dropzone = () => {
         }
       };
     });
-  }, []);
-
-  const removeFile = (name) => {
-    const selectedFileIndex = files.findIndex((e) => e.name === name);
-    files.splice(selectedFileIndex, 1);
-    // update selectedFiles array
-    setFiles([...files]);
-  };
-
-  const removeError = (name) => {
-    const selectedFileIndex = errorFiles.findIndex((e) => e.name === name);
-    errorFiles.splice(selectedFileIndex, 1);
-    // update selectedFiles array
-    setErrorFiles([...errorFiles]);
   };
 
   const {
@@ -122,10 +131,10 @@ const Dropzone = () => {
     isDragAccept,
     isDragReject,
     isDragActive,
-  } = useDropzone({ onDrop, disabled: totalSize > maxSize ? true : false });
+  } = useDropzone({ onDrop, disabled: totalSize() > maxSize ? true : false });
 
   return (
-    <div className="container">
+    <div className="container" style={{ marginTop: "2em" }}>
       <ToastContainer
         className="p-2  overflow-hidden "
         position="top-start"
@@ -153,7 +162,13 @@ const Dropzone = () => {
           </Toast>
         ))}
       </ToastContainer>
-
+      <Button
+        variant="primary"
+        size="lg"
+        disabled={totalSize() > maxSize ? true : false}
+      >
+        upload
+      </Button>
       <Container
         {...getRootProps({
           isFocused,
@@ -168,7 +183,7 @@ const Dropzone = () => {
         ) : (
           <p>Drag 'n' drop some files here, or click to select files</p>
         )}
-        {fileSize(totalSize)}
+        {fileSize(totalSize())}
       </Container>
 
       <Row
@@ -185,7 +200,7 @@ const Dropzone = () => {
           marginTop: "10px",
         }}
       >
-        <ListGroup as="ol" variant="flush" style={{ marginTop: "10px" }}>
+        <ListGroup as="ol" variant="flush">
           {files.map((data, i) => (
             <ListGroup.Item
               as="li"

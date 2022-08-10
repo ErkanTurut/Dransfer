@@ -1,12 +1,15 @@
 import { Link } from "react-router-dom";
 import { Navbar, Nav, Button, Container } from "react-bootstrap";
+import capybara from "../assets/capybara.svg";
 
 const Navigation = ({ web3Handler, account }) => {
   return (
     <>
       <Navbar expand="lg" bg="dark" variant="dark">
         <Container>
-          <Navbar.Brand href="#">Dransfer</Navbar.Brand>
+          <Navbar.Brand href="#">
+            <img alt="" src={capybara} height="40" /> Dransfer
+          </Navbar.Brand>
           <Nav>
             {account ? (
               <Nav.Link

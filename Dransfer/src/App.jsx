@@ -35,9 +35,9 @@ function App() {
       <>
         <Navigation web3Handler={web3Handler} account={account} />
       </>
-      {/*<div>
+      <div>
         <img src={reactLogo} className="logo react" alt="React logo" />
-      </div> */}
+      </div>
 
       <>
         <Dropzone />

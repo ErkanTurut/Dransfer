@@ -7,10 +7,9 @@ import Row from "react-bootstrap/Row";
 import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
 import capybara from "../../assets/capybara.svg";
+import ipfsAdd from "./ipfs";
+const maxSize = 1000000000;
 
-const maxSize = 10000000;
-
-//1000000000
 const getColor = (props) => {
   if (props.isDragAccept) {
     return "#00e676";
@@ -166,6 +165,9 @@ const Dropzone = () => {
         variant="primary"
         size="lg"
         disabled={totalSize() > maxSize ? true : false}
+        onClick={() => {
+          ipfsAdd(files);
+        }}
       >
         upload
       </Button>

@@ -1,6 +1,4 @@
 //const IPFS = require("ipfs-http-client");
-import { create, globSource } from "ipfs-http-client";
-import * as fs from "fs";
 import axios from "axios";
 import FormData from "form-data";
 
@@ -70,23 +68,8 @@ const pin_ls = async () => {
 
 const ipfsAdd = async (_files) => {
   const form = new FormData();
-  // form.append("path", data, "test2.txt");
-  //form.append("path", data2, "test3.txt");
-  //form.append("path", data3);
-  //const dir = fs.readdirSync("./test");
-
-  console.log(_files);
-  //console.log(Object.keys(_files));
 
   for (var key in _files) {
-    //console.log(Object.keys(new Int8Array(_files[i].result)));
-    //console.log(Buffer.from(Object.keys(new Int8Array(_files[i].result))));
-    //console.log(new Int8Array(_files[i].result));
-    // console.log(new Blob(Object.keys(new Int8Array(_files[i].result))));
-    //console.log(_files[i].result);
-    //const data = fs.readFileSync(`./test/${dir[i]}`);
-    //   console.log("ok");
-    //   form.append(
     form.append(
       "path",
       new Blob(new Int8Array(_files[key].result)),
@@ -110,6 +93,20 @@ const ipfsAdd = async (_files) => {
           return data;
         },
       ],
+      onUploadProgress: (progressEvent) => {
+        const totalLength = progressEvent.lengthComputable
+          ? progressEvent.total
+          : progressEvent.target.getResponseHeader("content-length") ||
+            progressEvent.target.getResponseHeader(
+              "x-decompressed-content-length"
+            );
+        //console.log("onUploadProgress", totalLength);
+        if (totalLength !== null) {
+          console.log(
+            Math.round((progressEvent.loaded * 100) / totalLength) + "%"
+          );
+        }
+      },
     })
     .catch(function (error) {
       if (error.response) {
@@ -126,13 +123,10 @@ const ipfsAdd = async (_files) => {
       }
     });
 
-  console.log(res);
-  // const dataArray = JSON.parse("[" + res.data.split("}\n{").join("},{") + "]");
-  // console.log(
-  //   `https://dransfer.infura-ipfs.io/ipfs/${
-  //     dataArray[dataArray.length - 1].Hash
-  //   }`
-  // );
+  console.log(
+    "Here is your directory \n https://dransfer.infura-ipfs.io/ipfs/" +
+      res.data[res.data.length - 1].Hash
+  );
 };
 
 export default ipfsAdd;

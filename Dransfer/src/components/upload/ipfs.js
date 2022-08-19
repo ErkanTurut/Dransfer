@@ -3,13 +3,9 @@ import { create, globSource } from "ipfs-http-client";
 import * as fs from "fs";
 import axios from "axios";
 import FormData from "form-data";
-import { Buffer } from "buffer";
 
-const projectId = "2CDMVDtBBlDw895YROyH9azDwCb";
-const projectSecret = "8b7961627bdac977f7cfb3974e871b55";
-
-const auth =
-  "Basic " + Buffer.from(projectId + ":" + projectSecret).toString("base64");
+const projectId = import.meta.env.VITE_PROJECT_ID;
+const projectSecret = import.meta.env.VITE_PROJECT_SECRET;
 
 const pin_rm = async (_path) => {
   const res = await axios
@@ -17,8 +13,9 @@ const pin_rm = async (_path) => {
       params: {
         arg: _path,
       },
-      headers: {
-        Authorization: auth,
+      auth: {
+        username: projectId,
+        password: projectSecret,
       },
     })
     .catch(function (error) {
@@ -44,8 +41,9 @@ const pin_ls = async () => {
       params: {
         type: "recursive",
       },
-      headers: {
-        Authorization: auth,
+      auth: {
+        username: projectId,
+        password: projectSecret,
       },
     })
     .catch(function (error) {
@@ -77,53 +75,64 @@ const ipfsAdd = async (_files) => {
   //form.append("path", data3);
   //const dir = fs.readdirSync("./test");
 
-  //console.log(fs.readFileSync(`./test/text.txt`));
   console.log(_files);
   //console.log(Object.keys(_files));
 
-  for (let i = 0; i < _files.length; i++) {
+  for (var key in _files) {
     //console.log(Object.keys(new Int8Array(_files[i].result)));
-    console.log(Buffer.from(Object.keys(new Int8Array(_files[i].result))));
+    //console.log(Buffer.from(Object.keys(new Int8Array(_files[i].result))));
+    //console.log(new Int8Array(_files[i].result));
+    // console.log(new Blob(Object.keys(new Int8Array(_files[i].result))));
     //console.log(_files[i].result);
     //const data = fs.readFileSync(`./test/${dir[i]}`);
+    //   console.log("ok");
+    //   form.append(
     form.append(
       "path",
-      Buffer.from(Object.keys(new Int8Array(_files[i].result))),
-      _files[i].path
+      new Blob(new Int8Array(_files[key].result)),
+      _files[key].path
     );
   }
-  console.log(form);
 
-  //metadata is optional
+  const res = await axios
+    .post("https://ipfs.infura.io:5001/api/v0/add", form, {
+      params: {
+        "wrap-with-directory": true,
+        recursive: true,
+      },
+      auth: {
+        username: projectId,
+        password: projectSecret,
+      },
+      transformResponse: [
+        function (data) {
+          data = JSON.parse("[" + data.split("}\n{").join("},{") + "]");
+          return data;
+        },
+      ],
+    })
+    .catch(function (error) {
+      if (error.response) {
+        // Request made and server responded
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", error.message);
+      }
+    });
 
-  // const res = await axios
-  //   .post("https://ipfs.infura.io:5001/api/v0/add", form, {
-  //     params: {
-  //       "wrap-with-directory": true,
-  //       recursive: true,
-  //     },
-  //     headers: {
-  //       Authorization: auth,
-  //     },
-  //   })
-  //   .catch(function (error) {
-  //     if (error.response) {
-  //       // Request made and server responded
-  //       console.log(error.response.data);
-  //       console.log(error.response.status);
-  //       console.log(error.response.headers);
-  //     } else if (error.request) {
-  //       // The request was made but no response was received
-  //       console.log(error.request);
-  //     } else {
-  //       // Something happened in setting up the request that triggered an Error
-  //       console.log("Error", error.message);
-  //     }
-  //   });
-
-  // console.log(res.data);
+  console.log(res);
+  // const dataArray = JSON.parse("[" + res.data.split("}\n{").join("},{") + "]");
+  // console.log(
+  //   `https://dransfer.infura-ipfs.io/ipfs/${
+  //     dataArray[dataArray.length - 1].Hash
+  //   }`
+  // );
 };
-
-ipfsAdd();
 
 export default ipfsAdd;

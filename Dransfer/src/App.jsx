@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import reactLogo from "./assets/capybara.svg";
 import "./App.css";
-import Navigation from "./components/navbar";
+import Navigation from "./components/nav";
+import Header from "./components/upload/header";
 import Dropzone from "./components/upload/getFile";
 
 //import getWeb3 from "./getWeb3.js";
@@ -34,6 +35,9 @@ function App() {
     <div className="App">
       <>
         <Navigation web3Handler={web3Handler} account={account} />
+      </>
+      <>
+        <Header />
       </>
       <div>
         <img src={reactLogo} className="logo react" alt="React logo" />

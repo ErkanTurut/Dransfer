@@ -8,6 +8,7 @@ import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
 import capybara from "../../assets/capybara.svg";
 import ipfsAdd from "./ipfs";
+import { Buffer } from "buffer";
 const maxSize = 1000000000;
 
 const getColor = (props) => {
@@ -97,6 +98,14 @@ const Dropzone = () => {
   };
   //console.log(totalSize());
 
+  const upload = (_files) => {
+    const res = ipfsAdd(_files);
+    console.log(res);
+    res.then((r) => {
+      console.log(r);
+    });
+  };
+
   const onDrop = (acceptedFiles) => {
     acceptedFiles.forEach(async (file) => {
       const reader = new window.FileReader();
@@ -115,7 +124,7 @@ const Dropzone = () => {
           //const filesMap = await acceptedFiles.map((file) => file);
           setErrorFiles((curr) => [...curr, file]);
         } else {
-          file.result = reader.result;
+          file.result = await Buffer.from(reader.result);
           //const filesMap = await acceptedFiles.map((file) => file);
           setFiles((curr) => [...curr, file]);
         }
@@ -166,7 +175,7 @@ const Dropzone = () => {
         size="lg"
         disabled={totalSize() > maxSize ? true : false}
         onClick={() => {
-          ipfsAdd(files);
+          upload(files);
         }}
       >
         upload

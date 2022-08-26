@@ -3,7 +3,6 @@
 }
 
 /* scroll bar */
-
 .scrollbar-primary::-webkit-scrollbar {
   width: 8px;
   border-radius: 10px;
@@ -44,4 +43,25 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}
+
+.linear-wipe {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 200% auto;
+  background-clip: text;
+  text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient 15s ease infinite;
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

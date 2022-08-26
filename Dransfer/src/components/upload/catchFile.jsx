@@ -48,12 +48,12 @@ export const upload = (_files) => {
   });
 };
 
-const totalSize = (_files) => {
-  let totalSize = 0;
+export const totalSize = (_files) => {
+  let total = 0;
   for (let i = 0; i < _files.length; i++) {
-    totalSize += _files[i].size;
+    total += _files[i].size;
   }
-  return totalSize;
+  return total;
 };
 const CatchFile = (props) => {
   //console.log(props);

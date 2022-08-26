@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import reactLogo from "./assets/capybara.svg";
 import "./App.css";
 import Navigation from "./components/nav";
-import Header from "./components/upload/header";
+import Header from "./components/header";
 import Dropzone from "./components/upload/getFile";
 
 //import getWeb3 from "./getWeb3.js";

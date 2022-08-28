@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
-import reactLogo from "./assets/capybara.svg";
-import "./App.css";
 import Navigation from "./components/nav";
-import Header from "./components/header";
-import Dropzone from "./components/upload/getFile";
+import Header from "./components/Home";
+import Routes from "./Routes";
 
 //import getWeb3 from "./getWeb3.js";
 import { ethers } from "ethers";
@@ -37,20 +35,8 @@ function App() {
         <Navigation web3Handler={web3Handler} account={account} />
       </>
       <>
-        <Header />
+        <Routes />
       </>
-      <div>
-        <img src={reactLogo} className="logo react" alt="React logo" />
-      </div>
-
-      <>
-        <Dropzone />
-      </>
-      <div>
-        <p>
-          <code>Dransfer by KAM</code>
-        </p>
-      </div>
     </div>
   );
 }

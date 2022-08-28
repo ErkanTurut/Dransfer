@@ -3,7 +3,6 @@ import axios from "axios";
 import FormData from "form-data";
 import { Buffer } from "buffer";
 import * as fs from "fs";
-import ipfsProgress from "./getFile.jsx";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 const projectSecret = import.meta.env.VITE_PROJECT_SECRET;
@@ -119,11 +118,11 @@ const ipfsAdd = async (_files) => {
         console.log("Error", error.message);
       }
     });
-  return res.data;
-  // console.log(
-  //   "Here is your directory \n https://dransfer.infura-ipfs.io/ipfs/" +
-  //     res.data[res.data.length - 1].Hash
-  // );
+  console.log(res.data);
+  console.log(
+    "Here is your directory \n https://dransfer.infura-ipfs.io/ipfs/" +
+      res.data[res.data.length - 1].Hash
+  );
 };
 
 const dagResolve = async (_hash) => {

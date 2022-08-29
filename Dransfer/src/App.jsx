@@ -1,42 +1,52 @@
 import { useState, useEffect } from "react";
 import Navigation from "./components/nav";
-import Header from "./components/Home";
 import Routes from "./Routes";
+import { WalletLinkConnector } from "@web3-react/walletlink-connector";
+import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
+import { InjectedConnector } from "@web3-react/injected-connector";
+import { useWeb3React } from "@web3-react/core";
 
 //import getWeb3 from "./getWeb3.js";
 import { ethers } from "ethers";
 
+const infuraKey = import.meta.env.VITE_INFURA_KEY;
+
 function App() {
-  const [account, setAccount] = useState(null);
+  const { activate, deactivate } = useWeb3React();
+  const { active, chainId, account } = useWeb3React();
 
-  const web3Handler = async () => {
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
-    setAccount(accounts[0]);
-    // Get provider from Metamask
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    // Set signer
-    const signer = provider.getSigner();
+  const CoinbaseWallet = new WalletLinkConnector({
+    url: `https://mainnet.infura.io/v3/${infuraKey}`,
+    appName: "Web3-react Demo",
+    supportedChainIds: [1, 3, 4, 5, 42],
+  });
 
-    window.ethereum.on("chainChanged", (chainId) => {
-      window.location.reload();
-    });
+  const WalletConnect = new WalletConnectConnector({
+    rpcUrl: `https://mainnet.infura.io/v3/${infuraKey}`,
+    bridge: "https://bridge.walletconnect.org",
+    qrcode: true,
+  });
 
-    window.ethereum.on("accountsChanged", async function (accounts) {
-      setAccount(accounts[0]);
-      await web3Handler();
-    });
-  };
+  const Injected = new InjectedConnector({
+    supportedChainIds: [1, 3, 4, 5, 42],
+  });
 
   return (
     <div className="App">
       <>
-        <Navigation web3Handler={web3Handler} account={account} />
+        <Navigation Injected={Injected} activate={activate} account={account} />
       </>
+
       <>
         <Routes />
       </>
+      <button
+        onClick={() => {
+          activate(Injected);
+        }}
+      >
+        Metamask
+      </button>
     </div>
   );
 }

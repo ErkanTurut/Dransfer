@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { Navbar, Nav, Button, Container } from "react-bootstrap";
-import capybara from "../assets/capybara.svg";
 
-const Navigation = ({ web3Handler, account }) => {
+const Navigation = (props) => {
+  const { activate, Injected, account } = props;
+
   return (
     <nav
       className="navbar navbar-dark navbar-expand-md fixed-top navbar-shrink py-3"
@@ -68,7 +68,9 @@ const Navigation = ({ web3Handler, account }) => {
             <button
               className="btn btn-primary shadow btn-sm"
               role="button"
-              onClick={web3Handler}
+              onClick={() => {
+                activate(Injected);
+              }}
             >
               Connect Wallet
             </button>

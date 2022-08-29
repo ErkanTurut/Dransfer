@@ -1,5 +1,5 @@
 import React from "react";
-import { fileSize, removeFile, fileType, totalSize } from "./catchFile";
+import { fileSize, totalSize } from "./catchFile";
 
 const Settings = (props) => {
   const {
@@ -8,6 +8,7 @@ const Settings = (props) => {
     setHandleWalletCheck,
     handleWalletCheck,
     setHandleNextClick,
+    setIsSendings,
   } = props;
 
   return (
@@ -146,9 +147,7 @@ const Settings = (props) => {
         <button
           className="btn btn-primary btn-sm d-flex justify-content-center align-items-center d-block w-100"
           type="button"
-          onClick={() => {
-            ipfsAdd(files);
-          }}
+          onClick={setIsSendings.toggle}
         >
           Send
           <svg

@@ -68,7 +68,7 @@ const pin_ls = async () => {
 
 //pin_ls();
 
-const ipfsAdd = async (_files) => {
+const ipfsAdd = async (_files, setIsLoading, setLink, setProgress) => {
   const form = new FormData();
 
   for (var key in _files) {
@@ -100,7 +100,7 @@ const ipfsAdd = async (_files) => {
               "x-decompressed-content-length"
             );
         if (totalLength !== null) {
-          return Math.round((progressEvent.loaded * 100) / totalLength);
+          setProgress(Math.round((progressEvent.loaded * 100) / totalLength));
         }
       },
     })
@@ -118,10 +118,10 @@ const ipfsAdd = async (_files) => {
         console.log("Error", error.message);
       }
     });
-  console.log(res.data);
-  console.log(
-    "Here is your directory \n https://dransfer.infura-ipfs.io/ipfs/" +
-      res.data[res.data.length - 1].Hash
+
+  setIsLoading(false);
+  setLink(
+    `https://dransfer.infura-ipfs.io/ipfs/${res.data[res.data.length - 1].Hash}`
   );
 };
 

@@ -1,11 +1,6 @@
 import React from "react";
 
-import CatchFile, {
-  fileSize,
-  removeFile,
-  fileType,
-  totalSize,
-} from "./catchFile";
+import CatchFile, { fileSize, removeFile } from "./catchFile";
 
 const FileHandler = (props) => {
   const {

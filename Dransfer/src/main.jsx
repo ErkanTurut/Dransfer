@@ -1,20 +1,30 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { Web3ReactProvider } from "@web3-react/core";
-import { Web3Provider } from "@ethersproject/providers";
+import { WagmiConfig, createClient, chain, configureChains } from "wagmi";
+import { getDefaultProvider } from "ethers";
+import { infuraProvider } from "wagmi/providers/infura";
 
+import connectors from "./components/connectors/wallets";
 import "./assets/css/bootstrap.min.css";
 import "./assets/css/style.compiled.css";
 
-function getLibrary(provider) {
-  return new Web3Provider(provider);
-}
+const { chains, provider, webSocketProvider } = configureChains(
+  [chain.mainnet, chain.polygon],
+  [infuraProvider({ apiKey: import.meta.env.VITE_INFURA_KEY })]
+);
+
+const client = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+  webSocketProvider,
+});
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <Web3ReactProvider getLibrary={getLibrary}>
-    <React.StrictMode>
+  <React.StrictMode>
+    <WagmiConfig client={client}>
       <App />
-    </React.StrictMode>
-  </Web3ReactProvider>
+    </WagmiConfig>
+  </React.StrictMode>
 );

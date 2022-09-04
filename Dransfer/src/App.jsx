@@ -1,29 +1,21 @@
 import { useState, useEffect } from "react";
 import Navigation from "./components/nav";
 import Routes from "./Routes";
-
-import { useWeb3React } from "@web3-react/core";
-import ConnectionModal from "./components/connectionModal";
-
-//import getWeb3 from "./getWeb3.js";
-import { ethers } from "ethers";
-
+import SelectWalletModal from "./components/selectWalletModal";
+import { useAccount, useConnect, useEnsName } from "wagmi";
 function App() {
-  const { active, chainId, account } = useWeb3React();
-  useEffect(() => {
-    console.log(chainId, account, active);
-  });
+  const { address, isConnected } = useAccount();
+
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="App">
       <>
-        <ConnectionModal />
+        <SelectWalletModal showModal={showModal} setShowModal={setShowModal} />
       </>
-
       <>
-        <Navigation account={account} />
+        <Navigation account={address} setShowModal={setShowModal} />
       </>
-
       <>
         <Routes />
       </>

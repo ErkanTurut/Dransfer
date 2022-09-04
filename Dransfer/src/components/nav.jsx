@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { useWeb3React } from "@web3-react/core";
+import { useDisconnect } from "wagmi";
 const Navigation = (props) => {
-  const { account } = props;
-
+  const { account, setShowModal } = props;
+  const { disconnect } = useDisconnect();
   return (
     <nav
       className="navbar navbar-dark navbar-expand-md fixed-top navbar-shrink py-3"
@@ -17,7 +17,10 @@ const Navigation = (props) => {
       <div className="container">
         <a className="navbar-brand d-flex align-items-center" href="/">
           <span className="bs-icon-sm bs-icon-rounded bs-icon-white d-flex me-2 bs-icon">
-            <img src="assets/img/599956-200.png" style={{ width: "35px" }} />
+            <img
+              src="src/assets/img/599956-200.png"
+              style={{ width: "35px" }}
+            />
           </span>
           <span className="d-none d-print-inline d-sm-none d-md-inline d-lg-inline d-xl-inline d-xxl-inline">
             Dransfer
@@ -29,6 +32,7 @@ const Navigation = (props) => {
               className="btn btn-outline-success btn-sm text-nowrap d-inline d-print-none d-sm-inline d-md-none d-lg-none d-xl-none d-xxl-none"
               type="button"
               style={{ borderRadius: "10px", marginRight: "10px" }}
+              onClick={() => disconnect()}
             >
               {account.slice(0, 5) + "..." + account.slice(38, 42)}
             </button>
@@ -36,8 +40,7 @@ const Navigation = (props) => {
             <button
               className="btn btn-primary btn-sm text-nowrap shadow d-inline d-print-none d-sm-inline d-md-none d-lg-none d-xl-none d-xxl-none"
               type="button"
-              // data-bs-target="#modal-1"
-              // data-bs-toggle="modal"
+              onClick={() => setShowModal(true)}
               style={{ borderRadius: "10px", marginRight: "10px" }}
             >
               Connect wallet
@@ -87,6 +90,7 @@ const Navigation = (props) => {
               className="btn btn-outline-success btn-sm text-nowrap d-none d-print-inline d-sm-none d-md-inline d-lg-inline d-xl-inline d-xxl-inline"
               type="button"
               style={{ borderRadius: "10px" }}
+              onClick={() => disconnect()}
             >
               {account.slice(0, 5) + "..." + account.slice(38, 42)}
             </button>
@@ -96,6 +100,7 @@ const Navigation = (props) => {
               type="button"
               // data-bs-target="#modal-1"
               // data-bs-toggle="modal"
+              onClick={() => setShowModal(true)}
               style={{ borderRadius: "10px" }}
             >
               Connect wallet

@@ -4,9 +4,9 @@ import Modal from "react-bootstrap/Modal";
 import { useAccount, useConnect, useEnsName } from "wagmi";
 const SelectWalletModal = (props) => {
   const { showModal, setShowModal } = props;
-
   const { connectors, connect } = useConnect();
 
+  // console.log(connectors);
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered>
       <div className="modal-content">

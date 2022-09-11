@@ -81,6 +81,7 @@ const ipfsAdd = async (_files, setIsLoading, setLink, setProgress) => {
       params: {
         "wrap-with-directory": true,
         recursive: true,
+        quieter: true,
       },
       auth: {
         username: projectId,
@@ -123,6 +124,7 @@ const ipfsAdd = async (_files, setIsLoading, setLink, setProgress) => {
   setLink(
     `https://dransfer.infura-ipfs.io/ipfs/${res.data[res.data.length - 1].Hash}`
   );
+  dagResolve(res.data[res.data.length - 1].Hash);
 };
 
 const dagResolve = async (_hash) => {
@@ -186,7 +188,7 @@ const get = async (_hash) => {
     .post("https://ipfs.infura.io:5001/api/v0/get", "", {
       params: {
         arg: _hash,
-        output: "./test.pdf",
+        output: "./",
       },
       auth: {
         username: projectId,
@@ -207,7 +209,7 @@ const get = async (_hash) => {
         console.log("Error", error.message);
       }
     });
-  console.log(res);
+  console.log(res.data);
 };
 
 const ipfsPinAdd = async (_hash) => {

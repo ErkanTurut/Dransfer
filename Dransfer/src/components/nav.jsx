@@ -1,11 +1,20 @@
 import { Link } from "react-router-dom";
-import { useDisconnect } from "wagmi";
+
+import {
+  useAccount,
+  useConnect,
+  useEnsName,
+  useDisconnect,
+  useBalance,
+} from "wagmi";
 const Navigation = (props) => {
-  const { account, setShowModal } = props;
+  const { setShowModal } = props;
+  const { address, isConnected } = useAccount();
+
   const { disconnect } = useDisconnect();
   return (
     <nav
-      className="navbar navbar-dark navbar-expand-md fixed-top navbar-shrink py-3"
+      className="navbar navbar-dark navbar-expand-md fixed-top navbar-shrink py-2"
       id="mainNav"
       style={{
         color: "var(--bs-blue)",
@@ -16,25 +25,22 @@ const Navigation = (props) => {
     >
       <div className="container">
         <a className="navbar-brand d-flex align-items-center" href="/">
-          <span className="bs-icon-sm bs-icon-rounded bs-icon-white d-flex me-2 bs-icon">
-            <img
-              src="src/assets/img/599956-200.png"
-              style={{ width: "35px" }}
-            />
+          <span className="bs-icon-md bs-icon-rounded bs-icon-white d-flex me-2 bs-icon">
+            <img src="src/assets/img/capypasta.svg" style={{ width: "32px" }} />
           </span>
           <span className="d-none d-print-inline d-sm-none d-md-inline d-lg-inline d-xl-inline d-xxl-inline">
-            Dransfer
+            Capypasta
           </span>
         </a>
         <div>
-          {account ? (
+          {address && isConnected ? (
             <button
               className="btn btn-outline-success btn-sm text-nowrap d-inline d-print-none d-sm-inline d-md-none d-lg-none d-xl-none d-xxl-none"
               type="button"
               style={{ borderRadius: "10px", marginRight: "10px" }}
               onClick={() => disconnect()}
             >
-              {account.slice(0, 5) + "..." + account.slice(38, 42)}
+              {address.slice(0, 5) + "..." + address.slice(38, 42)}
             </button>
           ) : (
             <button
@@ -85,14 +91,14 @@ const Navigation = (props) => {
               </a>
             </li>
           </ul>
-          {account ? (
+          {address && isConnected ? (
             <button
               className="btn btn-outline-success btn-sm text-nowrap d-none d-print-inline d-sm-none d-md-inline d-lg-inline d-xl-inline d-xxl-inline"
               type="button"
               style={{ borderRadius: "10px" }}
               onClick={() => disconnect()}
             >
-              {account.slice(0, 5) + "..." + account.slice(38, 42)}
+              {address.slice(0, 5) + "..." + address.slice(38, 42)}
             </button>
           ) : (
             <button

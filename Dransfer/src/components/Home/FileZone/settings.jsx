@@ -47,21 +47,11 @@ const Settings = (props) => {
                           paddingBottom: "0px",
                           background: "var(--bs-body-bg)",
                         }}
-                        defaultValue={13}
+                        defaultValue={12}
                       >
-                        <option value={12}>7 days</option>
+                        <option value={12}>7 days </option>
                         <option value={13}>1 month</option>
                       </select>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="-64 0 512 512"
-                        width="1em"
-                        height="1em"
-                        fill="currentColor"
-                      >
-                        {/*! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. */}
-                        <path d="M192 384c-8.188 0-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L192 306.8l137.4-137.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-160 160C208.4 380.9 200.2 384 192 384z" />
-                      </svg>
                     </div>
                   </td>
                   <td>0€</td>

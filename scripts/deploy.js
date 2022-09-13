@@ -1,3 +1,5 @@
+const { ethers } = require("hardhat");
+
 async function main() {
   const [deployer] = await ethers.getSigners();
 
@@ -5,10 +7,10 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   // Get the ContractFactories and Signers here.
-  const NFT = await ethers.getContractFactory("DransferStorage");
-  const nft = await NFT.deploy();
-
-  console.log("DransferStorage contract address", nft.address);
+  const Dransfer = await ethers.getContractFactory("DransferStorage");
+  const dransfer = await Dransfer.deploy(2);
+  await dransfer.deployed();
+  console.log("DransferStorage contract address", dransfer.address);
 }
 
 main()

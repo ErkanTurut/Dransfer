@@ -6,9 +6,14 @@ import {
 } from "react-router-dom";
 
 import Home from "./components/Home";
+import Transfers from "./components/Transfers";
+import Navigation from "./components/nav";
+import SelectWalletModal from "./components/selectWalletModal";
 
 function Routes() {
   const [isLoading, setIsLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+
   window.addEventListener("load", (event) => {
     setIsLoading(false);
   });
@@ -18,8 +23,14 @@ function Routes() {
         console.log("Loading...")
       ) : (
         <Router>
+          <SelectWalletModal
+            showModal={showModal}
+            setShowModal={setShowModal}
+          />
+          <Navigation setShowModal={setShowModal} />
           <Switch>
-            <Route exact path="/" element={<Home />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/transfers" element={<Transfers />} />
           </Switch>
         </Router>
       )}

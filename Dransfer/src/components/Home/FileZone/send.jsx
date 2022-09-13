@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import ipfsAdd from "../../upload/ipfs";
 const Send = (props) => {
-  const { files } = props;
+  const { files, contract } = props;
   const [isLoading, setIsLoading] = useState(true);
   const [link, setLink] = useState("");
   const [progress, setProgress] = useState(0);
@@ -72,6 +72,7 @@ const Send = (props) => {
               style={{ borderRadius: "10px", marginLeft: "10px" }}
               onClick={() => {
                 navigator.clipboard.writeText(link);
+                contract.store(link);
               }}
             >
               Copy

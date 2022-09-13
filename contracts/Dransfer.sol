@@ -10,6 +10,7 @@ contract DransferStorage is ReentrancyGuard {
         bool fileStatus;
     }
 
+
     address payable public immutable owner; // the account that receives fees
     uint public immutable fee; // the fee percentage on sales 
 
@@ -19,7 +20,7 @@ contract DransferStorage is ReentrancyGuard {
     }
  
 
-    mapping(address => mapping(uint => Directory)) public UserDirectories;
+    mapping(address => mapping(uint => Directory)) private UserDirectories;
     mapping(address => uint[]) public UserDirectoriesIndex;
 
 
@@ -42,7 +43,7 @@ contract DransferStorage is ReentrancyGuard {
 
     function getUserDirectory(uint x) public view returns (Directory memory){
     return UserDirectories[msg.sender][x];
-}
+    }
 
 
 }

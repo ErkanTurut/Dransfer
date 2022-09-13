@@ -7,6 +7,7 @@ import {
   useDisconnect,
   useBalance,
 } from "wagmi";
+
 const Navigation = (props) => {
   const { setShowModal } = props;
   const { address, isConnected } = useAccount();
@@ -66,9 +67,9 @@ const Navigation = (props) => {
         <div className="collapse navbar-collapse" id="navcol-1">
           <ul className="navbar-nav mx-auto">
             <li className="nav-item">
-              <a className="nav-link" href="index-app.html">
+              <Link className="nav-link" to="/">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
               <a className="nav-link" href="services.html">
@@ -76,9 +77,9 @@ const Navigation = (props) => {
               </a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="projects.html">
-                Projects
-              </a>
+              <Link className="nav-link" to="/transfers">
+                Transfers
+              </Link>
             </li>
             <li className="nav-item">
               <a className="nav-link" href="pricing.html">

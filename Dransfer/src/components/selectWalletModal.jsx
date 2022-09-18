@@ -5,6 +5,11 @@ import { useAccount, useConnect, useEnsName } from "wagmi";
 const SelectWalletModal = (props) => {
   const { showModal, setShowModal } = props;
   const { connectors, connect } = useConnect();
+  const { isDisconnected } = useAccount();
+
+  if (!isDisconnected) {
+    setShowModal(false);
+  }
 
   // console.log(connectors);
   return (

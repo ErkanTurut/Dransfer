@@ -15,7 +15,7 @@ const Navigation = (props) => {
   const { disconnect } = useDisconnect();
   return (
     <nav
-      className="navbar navbar-dark navbar-expand-md fixed-top navbar-shrink py-2"
+      className="navbar navbar-dark navbar-expand-md fixed-top navbar-shrink py-1"
       id="mainNav"
       style={{
         color: "var(--bs-blue)",
@@ -30,7 +30,7 @@ const Navigation = (props) => {
             <img src="src/assets/img/capypasta.svg" style={{ width: "32px" }} />
           </span>
           <span className="d-none d-print-inline d-sm-none d-md-inline d-lg-inline d-xl-inline d-xxl-inline">
-            Capypasta
+            Dransfer
           </span>
         </a>
         <div>

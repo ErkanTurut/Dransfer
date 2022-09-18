@@ -7,20 +7,15 @@ import FileHandler from "./FileZone/fileHandler";
 import Settings from "./FileZone/settings";
 import Send from "./FileZone/send";
 import DransferStorage from "../../artifacts/contracts/Dransfer.sol/DransferStorage.json";
-import { useContract, useSigner } from "wagmi";
 
-const Header = () => {
+const Header = (props) => {
+  const { setShowModal, showModal } = props;
+
   const [files, setFiles] = useState([]);
   const [errorFiles, setErrorFiles] = useState([]);
   const [handleNextClick, setHandleNextClick] = useToggle(false);
-  const [handleWalletCheck, setHandleWalletCheck] = useState(false);
-  const [isSendings, setIsSendings] = useToggle(false);
-  const { data: signer } = useSigner();
-  const contract = useContract({
-    addressOrName: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    contractInterface: DransferStorage.abi,
-    signerOrProvider: signer,
-  });
+  const [storeInWalletCheck, setStoreInWalletCheck] = useState(false);
+  const [isSendings, setIsSendings] = useState(false);
 
   return (
     <header className="bg-dark py-5">
@@ -39,22 +34,27 @@ const Header = () => {
                 >
                   <div className="card-body p-sm-3">
                     {isSendings ? (
-                      <Send files={files} contract={contract} />
+                      <Send
+                        files={files}
+                        storeInWalletCheck={storeInWalletCheck}
+                      />
                     ) : handleNextClick ? (
                       //settings component
                       <Settings
                         files={files}
-                        setHandleWalletCheck={setHandleWalletCheck}
-                        handleWalletCheck={handleWalletCheck}
+                        setStoreInWalletCheck={setStoreInWalletCheck}
+                        storeInWalletCheck={storeInWalletCheck}
                         setHandleNextClick={setHandleNextClick}
                         setIsSendings={setIsSendings}
+                        isSendings={isSendings}
+                        showModal={showModal}
+                        setShowModal={setShowModal}
                       />
                     ) : (
                       //file cacth component
                       <FileHandler
                         files={files}
                         setFiles={setFiles}
-                        errorFiles={errorFiles}
                         setErrorFiles={setErrorFiles}
                         setHandleNextClick={setHandleNextClick}
                       />

@@ -2,10 +2,11 @@ import React from "react";
 
 import Header from "./header";
 
-function Home() {
+function Home(props) {
+  const { setShowModal, showModal } = props;
   return (
     <>
-      <Header />
+      <Header showModal={showModal} setShowModal={setShowModal} />
     </>
   );
 }

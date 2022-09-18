@@ -1,15 +1,17 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ipfsAdd from "../../upload/ipfs";
+import { useAccount } from "wagmi";
+
 const Send = (props) => {
-  const { files, contract } = props;
+  const { files, storeInWalletCheck } = props;
+  const { address, isConnected, isDisconnected } = useAccount();
+
   const [isLoading, setIsLoading] = useState(true);
   const [link, setLink] = useState("");
   const [progress, setProgress] = useState(0);
-  //ipfsAdd(files, setIsLoading, setLink, setProgress);
 
   useEffect(() => {
-    ipfsAdd(files, setIsLoading, setLink, setProgress);
+    //ipfsAdd(files, setIsLoading, setLink, setProgress);
   }, [files]);
 
   return (
@@ -19,10 +21,10 @@ const Send = (props) => {
     >
       <img
         className="img-fluid"
-        src="./src/assets/img/capybara.svg"
+        src="./src/assets/img/capypasta_white.svg"
         loading="auto"
         style={{ padding: "0px", paddingBottom: "0px", marginBottom: "15px" }}
-        width={200}
+        width={150}
       />
       {isLoading ? (
         <div style={{ width: "100%" }}>

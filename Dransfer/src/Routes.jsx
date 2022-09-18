@@ -29,7 +29,12 @@ function Routes() {
           />
           <Navigation setShowModal={setShowModal} />
           <Switch>
-            <Route path="/" element={<Home />} />
+            <Route
+              path="/"
+              element={
+                <Home showModal={showModal} setShowModal={setShowModal} />
+              }
+            />
             <Route path="/transfers" element={<Transfers />} />
           </Switch>
         </Router>

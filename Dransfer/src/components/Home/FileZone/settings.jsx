@@ -1,15 +1,37 @@
 import React from "react";
 import { fileSize, totalSize } from "./catchFile";
-
+import { useFeeData } from "wagmi";
+import { useAccount } from "wagmi";
 const Settings = (props) => {
   const {
     maxSize,
     files,
-    setHandleWalletCheck,
-    handleWalletCheck,
+    setStoreInWalletCheck,
+    storeInWalletCheck,
     setHandleNextClick,
     setIsSendings,
+    isSendings,
+    showModal,
+    setShowModal,
   } = props;
+
+  const { address, isConnected, isDisconnected } = useAccount();
+
+  const { data, isError, isLoading } = useFeeData({
+    chainId: 137,
+  });
+
+  const sending = (storeInWalletCheck) => {
+    if (storeInWalletCheck) {
+      if (!isConnected) {
+        setShowModal(true);
+      } else {
+        setIsSendings(true);
+      }
+    } else {
+      setIsSendings(true);
+    }
+  };
 
   return (
     <div
@@ -56,6 +78,14 @@ const Settings = (props) => {
                   </td>
                   <td>0€</td>
                 </tr>
+                {storeInWalletCheck ? (
+                  <tr>
+                    <td>Gas fee</td>
+                    <td>{data.formatted.gasPrice}</td>
+                  </tr>
+                ) : (
+                  ""
+                )}
               </tbody>
               <tfoot
                 style={{
@@ -77,18 +107,18 @@ const Settings = (props) => {
             className="form-check-input"
             type="checkbox"
             id="formCheck-2"
-            checked={handleWalletCheck}
-            onChange={() => setHandleWalletCheck(!handleWalletCheck)}
+            checked={storeInWalletCheck}
+            onChange={() => setStoreInWalletCheck(!storeInWalletCheck)}
           />
           <label
             className="form-check-label"
             htmlFor="formCheck-2"
             style={{ baground: "var(--bs-light)" }}
           >
-            Send a transfer by wallet
+            Store the file in my wallet
           </label>
         </div>
-        {handleWalletCheck ? (
+        {/* {storeInWalletCheck ? (
           <input
             className="form-control"
             type="text"
@@ -99,7 +129,7 @@ const Settings = (props) => {
           />
         ) : (
           ""
-        )}
+        )} */}
 
         <textarea
           className="form-control"
@@ -137,7 +167,10 @@ const Settings = (props) => {
         <button
           className="btn btn-primary btn-sm d-flex justify-content-center align-items-center d-block w-100"
           type="button"
-          onClick={setIsSendings.toggle}
+          onClick={() => {
+            sending(storeInWalletCheck);
+          }}
+          disabled={isSendings}
         >
           Send
           <svg

@@ -5,15 +5,15 @@ import { useAccount, useConnect, useEnsName } from "wagmi";
 const SelectWalletModal = (props) => {
   const { showModal, setShowModal } = props;
   const { connectors, connect } = useConnect();
-  const { isDisconnected } = useAccount();
-
-  if (!isDisconnected) {
-    setShowModal(false);
-  }
+  const { isDisconnected, isConnected } = useAccount();
 
   // console.log(connectors);
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+    <Modal
+      show={showModal && isDisconnected}
+      onHide={() => setShowModal(false)}
+      centered
+    >
       <div className="modal-content">
         <div className="modal-header d-xl-flex align-items-start">
           <div style={{ paddingRight: "0px" }}>

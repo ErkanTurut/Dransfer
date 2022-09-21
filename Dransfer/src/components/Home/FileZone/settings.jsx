@@ -18,7 +18,13 @@ const Settings = (props) => {
   const { address, isConnected, isDisconnected } = useAccount();
 
   const { data, isError, isLoading } = useFeeData({
-    chainId: 137,
+    chainId: 1,
+    formatUnits: "gwei",
+    watch: true,
+    staleTime: 2_000,
+    onError(error) {
+      console.log("Error", error);
+    },
   });
 
   const sending = (storeInWalletCheck) => {
@@ -81,7 +87,7 @@ const Settings = (props) => {
                 {storeInWalletCheck ? (
                   <tr>
                     <td>Gas fee</td>
-                    <td>{data.formatted.gasPrice}</td>
+                    <td>{Number(data.formatted.gasPrice).toFixed(2)} Gwei</td>
                   </tr>
                 ) : (
                   ""

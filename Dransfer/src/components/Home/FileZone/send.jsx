@@ -1,18 +1,7 @@
 import React, { useEffect, useState } from "react";
-import ipfsAdd from "../../upload/ipfs";
-import { useAccount } from "wagmi";
 
 const Send = (props) => {
-  const { files, storeInWalletCheck } = props;
-  const { address, isConnected, isDisconnected } = useAccount();
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [link, setLink] = useState("");
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    //ipfsAdd(files, setIsLoading, setLink, setProgress);
-  }, [files]);
+  const { storeInWalletCheck, isLoading, progress, link } = props;
 
   return (
     <div
@@ -74,7 +63,6 @@ const Send = (props) => {
               style={{ borderRadius: "10px", marginLeft: "10px" }}
               onClick={() => {
                 navigator.clipboard.writeText(link);
-                contract.store(link);
               }}
             >
               Copy

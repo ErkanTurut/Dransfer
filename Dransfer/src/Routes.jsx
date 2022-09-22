@@ -10,6 +10,8 @@ import Transfers from "./components/Transfers";
 import Navigation from "./components/nav";
 import SelectWalletModal from "./components/selectWalletModal";
 
+import { ToastContainer } from "react-toastify";
+
 function Routes() {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -28,6 +30,17 @@ function Routes() {
             setShowModal={setShowModal}
           />
           <Navigation setShowModal={setShowModal} />
+          <ToastContainer
+            position="bottom-left"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
           <Switch>
             <Route
               path="/"

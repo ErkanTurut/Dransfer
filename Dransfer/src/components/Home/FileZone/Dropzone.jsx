@@ -2,15 +2,8 @@ import React from "react";
 
 import CatchFile, { fileSize, removeFile } from "./catchFile";
 
-const FileHandler = (props) => {
-  const {
-    maxSize,
-    files,
-    setFiles,
-    errorFiles,
-    setErrorFiles,
-    setHandleNextClick,
-  } = props;
+const Dropzone = (props) => {
+  const { maxSize, files, setFiles, setHandleNextClick } = props;
   return (
     //file cacth component
     <div
@@ -22,13 +15,7 @@ const FileHandler = (props) => {
         style={{ height: "295px", paddingBottom: "0px" }}
       >
         <div className="flex-fill mb-3  ">
-          <CatchFile
-            maxSize={false}
-            files={files}
-            setFiles={setFiles}
-            setErrorFiles={setErrorFiles}
-            errorFiles={errorFiles}
-          />
+          <CatchFile maxSize={false} files={files} setFiles={setFiles} />
         </div>
         <div
           className="mb-3 scrollbar-primary box-shadow"
@@ -149,4 +136,4 @@ const FileHandler = (props) => {
   );
 };
 
-export default FileHandler;
+export default Dropzone;

@@ -2,20 +2,19 @@ import { useState } from "react";
 
 import useToggle from "../../Hooks/useToggle";
 
-import HeroCTA from "./FileZone/heroCTA";
-import FileHandler from "./FileZone/fileHandler";
+import HeroCTA from "./heroCTA";
+import Dropzone from "./FileZone/Dropzone";
 import Settings from "./FileZone/settings";
-import Send from "./FileZone/send";
-import DransferStorage from "../../artifacts/contracts/Dransfer.sol/DransferStorage.json";
+//import DransferStorage from "../../artifacts/contracts/Dransfer.sol/DransferStorage.json";
 
 const Header = (props) => {
   const { setShowModal, showModal } = props;
 
   const [files, setFiles] = useState([]);
-  const [errorFiles, setErrorFiles] = useState([]);
+
   const [handleNextClick, setHandleNextClick] = useToggle(false);
   const [storeInWalletCheck, setStoreInWalletCheck] = useState(false);
-  const [isSendings, setIsSendings] = useState(false);
+  const [message, setMessage] = useState("");
 
   return (
     <header className="bg-dark py-5">
@@ -33,29 +32,22 @@ const Header = (props) => {
                   style={{ overflow: "hidden", borderRadius: "10px" }}
                 >
                   <div className="card-body p-sm-3">
-                    {isSendings ? (
-                      <Send
-                        files={files}
-                        storeInWalletCheck={storeInWalletCheck}
-                      />
-                    ) : handleNextClick ? (
+                    {handleNextClick ? (
                       //settings component
                       <Settings
                         files={files}
                         setStoreInWalletCheck={setStoreInWalletCheck}
                         storeInWalletCheck={storeInWalletCheck}
                         setHandleNextClick={setHandleNextClick}
-                        setIsSendings={setIsSendings}
-                        isSendings={isSendings}
-                        showModal={showModal}
                         setShowModal={setShowModal}
+                        message={message}
+                        setMessage={setMessage}
                       />
                     ) : (
                       //file cacth component
-                      <FileHandler
+                      <Dropzone
                         files={files}
                         setFiles={setFiles}
-                        setErrorFiles={setErrorFiles}
                         setHandleNextClick={setHandleNextClick}
                       />
                     )}

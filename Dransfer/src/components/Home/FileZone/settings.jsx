@@ -1,23 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { fileSize, totalSize } from "./catchFile";
-import { useFeeData } from "wagmi";
-import { useAccount } from "wagmi";
+import { useFeeData, useAccount, useContract, useSigner } from "wagmi";
+import ipfsAdd from "../../upload/ipfs";
+import { Buffer } from "buffer";
+import Send from "./send";
+import { toast } from "react-toastify";
+import getCurrency from "../../utils/getCurrency";
+import DransferStorage from "../../../artifacts/contracts/Dransfer.sol/DransferStorage.json";
+
 const Settings = (props) => {
   const {
-    maxSize,
     files,
     setStoreInWalletCheck,
     storeInWalletCheck,
     setHandleNextClick,
-    setIsSendings,
-    isSendings,
-    showModal,
     setShowModal,
+    message,
+    setMessage,
   } = props;
 
-  const { address, isConnected, isDisconnected } = useAccount();
+  const sizePrice = 0;
+  const storagePrice = 0;
 
-  const { data, isError, isLoading } = useFeeData({
+  const { address, isConnected } = useAccount();
+  const [isLoading, setIsLoading] = useState(true);
+  const [link, setLink] = useState("");
+  const [progress, setProgress] = useState(0);
+  const [isSendings, setIsSendings] = useState(false);
+
+  const { data } = useFeeData({
     chainId: 1,
     formatUnits: "gwei",
     watch: true,
@@ -26,20 +37,49 @@ const Settings = (props) => {
       console.log("Error", error);
     },
   });
+  const { data: signer } = useSigner();
+  const contract = useContract({
+    addressOrName: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+    contractInterface: DransferStorage.abi,
+    signerOrProvider: signer,
+  });
 
-  const sending = (storeInWalletCheck) => {
+  useEffect(async () => {
+    console.log(contract);
+    if (!isLoading && link.length > 0) {
+      contract.store(link);
+    }
+  }, [isLoading]);
+
+  const sending = async (storeInWalletCheck) => {
+    const obj = { message: message };
+    const buffer = Buffer.from(JSON.stringify(obj));
+    let msgFile = new File([buffer], "info.json");
+    msgFile.result = buffer;
+    msgFile.path = "info.json";
+
     if (storeInWalletCheck) {
       if (!isConnected) {
+        toast.warn("Please connect your wallet.");
         setShowModal(true);
       } else {
-        setIsSendings(true);
+        files.push(msgFile);
+        ipfsAdd(files, setIsLoading, setLink, setProgress, setIsSendings);
       }
     } else {
-      setIsSendings(true);
+      files.push(msgFile);
+      ipfsAdd(files, setIsLoading, setLink, setProgress, setIsSendings);
     }
   };
 
-  return (
+  return isSendings ? (
+    <Send
+      storeInWalletCheck={storeInWalletCheck}
+      isLoading={isLoading}
+      link={link}
+      progress={progress}
+    />
+  ) : (
     <div
       className="d-flex flex-column flex-grow-1 justify-content-between"
       method="post"
@@ -58,7 +98,7 @@ const Settings = (props) => {
               <tbody>
                 <tr>
                   <td>Size price</td>
-                  <td>0 €</td>
+                  <td>{sizePrice} €</td>
                 </tr>
                 <tr>
                   <td>
@@ -82,7 +122,7 @@ const Settings = (props) => {
                       </select>
                     </div>
                   </td>
-                  <td>0€</td>
+                  <td>{storagePrice} €</td>
                 </tr>
                 {storeInWalletCheck ? (
                   <tr>
@@ -101,7 +141,7 @@ const Settings = (props) => {
               >
                 <tr>
                   <td>Total price</td>
-                  <td>0 €</td>
+                  <td>{sizePrice + storagePrice} €</td>
                 </tr>
               </tfoot>
             </table>
@@ -125,23 +165,24 @@ const Settings = (props) => {
           </label>
         </div>
         {/* {storeInWalletCheck ? (
-          <input
-            className="form-control"
-            type="text"
-            placeholder="Wallet address"
-            style={{ marginTop: "5px" }}
-            pattern="^0x[a-fA-F0-9]{40}$"
-            required
-          />
-        ) : (
-          ""
-        )} */}
+        <input
+          className="form-control"
+          type="text"
+          placeholder="Wallet address"
+          style={{ marginTop: "5px" }}
+          pattern="^0x[a-fA-F0-9]{40}$"
+          required
+        />
+      ) : (
+        ""
+      )} */}
 
         <textarea
           className="form-control"
           style={{ marginTop: "10px", height: "100%" }}
           placeholder="Your message"
-          defaultValue={""}
+          onChange={(e) => setMessage(e.target.value)}
+          defaultValue={message}
         />
       </div>
       <div

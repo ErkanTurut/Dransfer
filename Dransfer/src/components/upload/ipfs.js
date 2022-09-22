@@ -1,8 +1,6 @@
 //const IPFS = require("ipfs-http-client");
 import axios from "axios";
 import FormData from "form-data";
-import { Buffer } from "buffer";
-import * as fs from "fs";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 const projectSecret = import.meta.env.VITE_PROJECT_SECRET;
@@ -68,9 +66,15 @@ const pin_ls = async () => {
 
 //pin_ls();
 
-const ipfsAdd = async (_files, setIsLoading, setLink, setProgress) => {
+const ipfsAdd = async (
+  _files,
+  setIsLoading,
+  setLink,
+  setProgress,
+  setIsSendings
+) => {
   const form = new FormData();
-
+  console.log(_files);
   for (var key in _files) {
     const blob = await new Blob([_files[key].result]);
     await form.append("path", blob, _files[key].path);
@@ -94,6 +98,7 @@ const ipfsAdd = async (_files, setIsLoading, setLink, setProgress) => {
         },
       ],
       onUploadProgress: (progressEvent) => {
+        setIsSendings(true);
         const totalLength = progressEvent.lengthComputable
           ? progressEvent.total
           : progressEvent.target.getResponseHeader("content-length") ||

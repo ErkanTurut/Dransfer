@@ -8,6 +8,7 @@ import { infuraProvider } from "wagmi/providers/infura";
 import connectors from "./components/connectors/wallets";
 import "./assets/css/bootstrap.min.css";
 import "./assets/css/style.compiled.css";
+import "react-toastify/dist/ReactToastify.css";
 
 const { chains, provider, webSocketProvider } = configureChains(
   [chain.mainnet, chain.polygon],

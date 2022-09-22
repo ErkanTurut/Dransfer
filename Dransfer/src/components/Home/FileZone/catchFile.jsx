@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Buffer } from "buffer";
 import { useDropzone } from "react-dropzone";
+import { toast } from "react-toastify";
 
 export const fileType = (fileName) => {
   return (
@@ -33,13 +34,6 @@ export const removeFile = (_result, _files, _setFiles) => {
   _setFiles([..._files]);
 };
 
-export const removeError = (_name, _errorFiles, _setErrorFiles) => {
-  const selectedFileIndex = _errorFiles.findIndex((e) => e.name === name);
-  _errorFiles.splice(selectedFileIndex, 1);
-  // update selectedFiles array
-  _setErrorFiles([..._errorFiles]);
-};
-
 export const upload = (_files) => {
   const res = ipfsAdd(_files);
   console.log(res);
@@ -57,7 +51,7 @@ export const totalSize = (_files) => {
 };
 const CatchFile = (props) => {
   //console.log(props);
-  const { maxSize, files, setFiles, setErrorFiles } = props;
+  const { maxSize, files, setFiles } = props;
 
   const onDrop = (acceptedFiles) => {
     console.log(acceptedFiles);
@@ -69,14 +63,11 @@ const CatchFile = (props) => {
       reader.onloadend = async () => {
         //console.log(totalSize, file.size, maxSize);
         if (maxSize && totalSize(files) + file.size > maxSize) {
-          console.log("ok");
-          file.error = `You have exceeded the maximum size of ${fileSize(
-            maxSize
-          )}`;
-          setErrorFiles((curr) => [...curr, file]);
+          toast.error(
+            `You have exceeded the maximum size of ${fileSize(maxSize)}`
+          );
         } else if (!validateFile(file)) {
-          file.error = "This file type is not supported.";
-          setErrorFiles((curr) => [...curr, file]);
+          toast.error(`This file type is not supported.`);
         } else {
           file.result = await Buffer.from(reader.result);
           setFiles((curr) => [...curr, file]);
@@ -84,14 +75,7 @@ const CatchFile = (props) => {
       };
     });
   };
-  const {
-    getRootProps,
-    getInputProps,
-    isFocused,
-    isDragAccept,
-    isDragReject,
-    isDragActive,
-  } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: true,
   });

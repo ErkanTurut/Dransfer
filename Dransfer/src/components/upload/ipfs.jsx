@@ -1,4 +1,5 @@
 //const IPFS = require("ipfs-http-client");
+import React from "react";
 import axios from "axios";
 import FormData from "form-data";
 
@@ -66,13 +67,7 @@ const pin_ls = async () => {
 
 //pin_ls();
 
-const ipfsAdd = async (
-  _files,
-  setIsLoading,
-  setLink,
-  setProgress,
-  setIsSendings
-) => {
+const ipfsAdd = async (_files, setHash, setProgress, setIsSent) => {
   const form = new FormData();
   console.log(_files);
   for (var key in _files) {
@@ -98,7 +93,7 @@ const ipfsAdd = async (
         },
       ],
       onUploadProgress: (progressEvent) => {
-        setIsSendings(true);
+        setIsSent(false);
         const totalLength = progressEvent.lengthComputable
           ? progressEvent.total
           : progressEvent.target.getResponseHeader("content-length") ||
@@ -125,11 +120,11 @@ const ipfsAdd = async (
       }
     });
 
-  setIsLoading(false);
-  setLink(
-    `https://dransfer.infura-ipfs.io/ipfs/${res.data[res.data.length - 1].Hash}`
-  );
-  dagResolve(res.data[res.data.length - 1].Hash);
+  setIsSent(true);
+
+  setHash(res.data[res.data.length - 1].Hash);
+
+  //dagResolve(res.data[res.data.length - 1].Hash);
 };
 
 const dagResolve = async (_hash) => {

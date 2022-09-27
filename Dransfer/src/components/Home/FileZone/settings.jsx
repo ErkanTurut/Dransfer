@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { fileSize, totalSize } from "./catchFile";
-import { useFeeData, useAccount, useContract, useSigner } from "wagmi";
+import {
+  useFeeData,
+  useAccount,
+  useSigner,
+  useProvider,
+  useContract,
+} from "wagmi";
 import ipfsAdd from "../../upload/ipfs";
 import { Buffer } from "buffer";
 import Send from "./send";
 import { toast } from "react-toastify";
-import getCurrency from "../../utils/getCurrency";
 import DransferStorage from "../../../artifacts/contracts/Dransfer.sol/DransferStorage.json";
+//import getCurrency from "../../utils/getCurrency";
 
 const Settings = (props) => {
   const {
@@ -23,10 +29,17 @@ const Settings = (props) => {
   const storagePrice = 0;
 
   const { address, isConnected } = useAccount();
-  const [isLoading, setIsLoading] = useState(true);
-  const [link, setLink] = useState("");
+
+  const [hash, setHash] = useState("");
   const [progress, setProgress] = useState(0);
-  const [isSendings, setIsSendings] = useState(false);
+  const [isSent, setIsSent] = useState(null);
+
+  const { data: signer } = useSigner();
+  const contract = useContract({
+    addressOrName: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+    contractInterface: DransferStorage.abi,
+    signerOrProvider: signer,
+  });
 
   const { data } = useFeeData({
     chainId: 1,
@@ -37,19 +50,6 @@ const Settings = (props) => {
       console.log("Error", error);
     },
   });
-  const { data: signer } = useSigner();
-  const contract = useContract({
-    addressOrName: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
-    contractInterface: DransferStorage.abi,
-    signerOrProvider: signer,
-  });
-
-  useEffect(async () => {
-    console.log(contract);
-    if (!isLoading && link.length > 0) {
-      contract.store(link);
-    }
-  }, [isLoading]);
 
   const sending = async (storeInWalletCheck) => {
     const obj = { message: message };
@@ -64,19 +64,29 @@ const Settings = (props) => {
         setShowModal(true);
       } else {
         files.push(msgFile);
-        ipfsAdd(files, setIsLoading, setLink, setProgress, setIsSendings);
+        ipfsAdd(files, setHash, setProgress, setIsSent);
       }
     } else {
       files.push(msgFile);
-      ipfsAdd(files, setIsLoading, setLink, setProgress, setIsSendings);
+      ipfsAdd(files, setHash, setProgress, setIsSent);
     }
   };
 
-  return isSendings ? (
+  useEffect(() => {
+    if (isSent) {
+      if (storeInWalletCheck && hash.length > 0) {
+        contract.store(hash).then((tx) => {
+          toast.success("File added to wallet.");
+        });
+      }
+    }
+  }, [isSent]);
+
+  return isSent != null ? (
     <Send
       storeInWalletCheck={storeInWalletCheck}
-      isLoading={isLoading}
-      link={link}
+      isSent={isSent}
+      hash={hash}
       progress={progress}
     />
   ) : (
@@ -217,7 +227,7 @@ const Settings = (props) => {
           onClick={() => {
             sending(storeInWalletCheck);
           }}
-          disabled={isSendings}
+          disabled={isSent}
         >
           Send
           <svg

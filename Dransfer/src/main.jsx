@@ -1,9 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { WagmiConfig, createClient, chain, configureChains } from "wagmi";
-import { getDefaultProvider } from "ethers";
+import {
+  WagmiConfig,
+  createClient,
+  chain,
+  configureChains,
+  useSigner,
+} from "wagmi";
 import { infuraProvider } from "wagmi/providers/infura";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 import connectors from "./components/connectors/wallets";
 import "./assets/css/bootstrap.min.css";

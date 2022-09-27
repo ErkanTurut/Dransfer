@@ -6,7 +6,7 @@ import HeroCTA from "./heroCTA";
 import Dropzone from "./FileZone/Dropzone";
 import Settings from "./FileZone/settings";
 //import DransferStorage from "../../artifacts/contracts/Dransfer.sol/DransferStorage.json";
-
+import { useSigner } from "wagmi";
 const Header = (props) => {
   const { setShowModal, showModal } = props;
 

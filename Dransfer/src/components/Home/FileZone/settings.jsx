@@ -74,6 +74,7 @@ const Settings = (props) => {
 
   useEffect(() => {
     if (isSent) {
+      toast.success("File sent successfully.");
       if (storeInWalletCheck && hash.length > 0) {
         contract.store(hash).then((tx) => {
           toast.success("File added to wallet.");
@@ -174,19 +175,6 @@ const Settings = (props) => {
             Store the file in my wallet
           </label>
         </div>
-        {/* {storeInWalletCheck ? (
-        <input
-          className="form-control"
-          type="text"
-          placeholder="Wallet address"
-          style={{ marginTop: "5px" }}
-          pattern="^0x[a-fA-F0-9]{40}$"
-          required
-        />
-      ) : (
-        ""
-      )} */}
-
         <textarea
           className="form-control"
           style={{ marginTop: "10px", height: "100%" }}

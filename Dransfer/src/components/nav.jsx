@@ -15,7 +15,7 @@ const Navigation = (props) => {
   const { disconnect } = useDisconnect();
   return (
     <nav
-      className="navbar navbar-dark navbar-expand-md fixed-top navbar-shrink py-1"
+      className="navbar navbar-dark navbar-expand-md fixed-top navbar-shrink py-2"
       id="mainNav"
       style={{
         color: "var(--bs-blue)",
@@ -26,14 +26,20 @@ const Navigation = (props) => {
     >
       <div className="container">
         <a className="navbar-brand d-flex align-items-center" href="/">
-          <span className="bs-icon-md bs-icon-rounded bs-icon-white d-flex me-2 bs-icon">
-            <img src="src/assets/img/capypasta.svg" style={{ width: "32px" }} />
+          <span
+            className="bs-icon-md bs-icon-rounded bs-icon-white shadow-none d-flex justify-content-center align-items-center me-2 bs-icon"
+            style={{ padding: "4px", borderRadius: "10px" }}
+          >
+            <img
+              src="src/assets/img/capypasta.svg"
+              style={{ height: "40px" }}
+            />
           </span>
           <span className="d-none d-print-inline d-sm-none d-md-inline d-lg-inline d-xl-inline d-xxl-inline">
             Dransfer
           </span>
         </a>
-        <div>
+        <div className="d-flex justify-content-end align-items-center">
           {address && isConnected ? (
             <button
               className="btn btn-outline-success btn-sm text-nowrap d-inline d-print-none d-sm-inline d-md-none d-lg-none d-xl-none d-xxl-none"
@@ -58,7 +64,13 @@ const Navigation = (props) => {
             className="navbar-toggler"
             data-bs-target="#navcol-1"
             aria-controls="#navcol-1"
-            style={{ borderRadius: "10px" }}
+            style={{
+              borderRadius: "10px",
+              paddingTop: "3px",
+              paddingBottom: "3px",
+              paddingLeft: "6px",
+              paddingRight: "6px",
+            }}
           >
             <span className="visually-hidden">Toggle navigation</span>
             <span className="navbar-toggler-icon" />

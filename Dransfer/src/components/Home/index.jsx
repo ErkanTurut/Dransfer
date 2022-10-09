@@ -1,13 +1,11 @@
 import React from "react";
-import { useSigner } from "wagmi";
-import Header from "./header";
-import { useToken } from "wagmi";
-function Home(props) {
-  const { setShowModal, showModal } = props;
 
+import Header from "./header";
+
+function Home(props) {
   return (
     <>
-      <Header showModal={showModal} setShowModal={setShowModal} />
+      <Header />
     </>
   );
 }

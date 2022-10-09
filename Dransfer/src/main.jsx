@@ -1,25 +1,57 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import {
-  WagmiConfig,
-  createClient,
-  chain,
-  configureChains,
-  useSigner,
-} from "wagmi";
+import { WagmiConfig, createClient, chain, configureChains } from "wagmi";
 import { infuraProvider } from "wagmi/providers/infura";
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-import connectors from "./components/connectors/wallets";
+import {
+  RainbowKitProvider,
+  connectorsForWallets,
+  lightTheme,
+} from "@rainbow-me/rainbowkit";
+
+import {
+  metaMaskWallet,
+  walletConnectWallet,
+  injectedWallet,
+  ledgerWallet,
+  coinbaseWallet,
+  rainbowWallet,
+} from "@rainbow-me/rainbowkit/wallets";
+
 import "./assets/css/bootstrap.min.css";
 import "./assets/css/style.compiled.css";
 import "react-toastify/dist/ReactToastify.css";
+import "@rainbow-me/rainbowkit/styles.css";
 
-const { chains, provider, webSocketProvider } = configureChains(
-  [chain.mainnet, chain.polygon],
+const { provider, webSocketProvider, chains } = configureChains(
+  [chain.polygon],
   [infuraProvider({ apiKey: import.meta.env.VITE_INFURA_KEY })]
 );
+
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [
+      metaMaskWallet({ chains }),
+      coinbaseWallet({
+        chains,
+        options: {
+          appName: "Dransfer",
+          jsonRpcUrl:
+            "https://mainnet.infura.io/v3/e55d782ca3414ac496c79cfc29b8f84c",
+          desc: "Dransfer",
+        },
+      }),
+      walletConnectWallet({
+        chains,
+      }),
+      injectedWallet({ chains }),
+      ledgerWallet({ chains }),
+      rainbowWallet({ chains }),
+    ],
+  },
+]);
 
 const client = createClient({
   autoConnect: true,
@@ -31,7 +63,9 @@ const client = createClient({
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <WagmiConfig client={client}>
-      <App />
+      <RainbowKitProvider theme={lightTheme()} chains={chains}>
+        <App />
+      </RainbowKitProvider>
     </WagmiConfig>
   </React.StrictMode>
 );

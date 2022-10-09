@@ -67,9 +67,17 @@ const pin_ls = async () => {
 
 //pin_ls();
 
-const ipfsAdd = async (_files, setHash, setProgress, setIsSent) => {
-  const form = new FormData();
+const ipfsAdd = async (
+  _files,
+  setProgress,
+  setIsSent,
+  isDirWrap,
+  isPinned,
+  isOnlyhash
+) => {
   console.log(_files);
+  const form = new FormData();
+
   for (var key in _files) {
     const blob = await new Blob([_files[key].result]);
     await form.append("path", blob, _files[key].path);
@@ -78,9 +86,10 @@ const ipfsAdd = async (_files, setHash, setProgress, setIsSent) => {
   const res = await axios
     .post("https://ipfs.infura.io:5001/api/v0/add", form, {
       params: {
-        "wrap-with-directory": true,
+        "wrap-with-directory": isDirWrap,
         recursive: true,
-        quieter: true,
+        pin: isPinned,
+        "only-hash": isOnlyhash,
       },
       auth: {
         username: projectId,
@@ -106,6 +115,8 @@ const ipfsAdd = async (_files, setHash, setProgress, setIsSent) => {
       },
     })
     .catch(function (error) {
+      setIsSent(null);
+      setProgress(0);
       if (error.response) {
         // Request made and server responded
         console.log(error.response.data);
@@ -119,11 +130,12 @@ const ipfsAdd = async (_files, setHash, setProgress, setIsSent) => {
         console.log("Error", error.message);
       }
     });
+  //console.log(res);
+  //setIsSent(true);
 
-  setIsSent(true);
-
-  setHash(res.data[res.data.length - 1].Hash);
-
+  //setHash(res.data[res.data.length - 1].Hash);
+  console.log(res);
+  return res.data[res.data.length - 1].Hash;
   //dagResolve(res.data[res.data.length - 1].Hash);
 };
 

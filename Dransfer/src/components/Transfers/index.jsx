@@ -24,7 +24,7 @@ function Transfers() {
           <div className="col-md-8 col-xl-6 text-center mx-auto">
             <h2 className="fw-bold">Transfers</h2>
             <p className="text-muted w-lg-50">
-              No matter the project, our team can handle it.&nbsp;
+              All your file transfers in the blockchain are listed here.
             </p>
           </div>
         </div>

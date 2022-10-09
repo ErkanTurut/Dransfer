@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import useToggle from "../../Hooks/useToggle";
 
@@ -6,15 +6,15 @@ import HeroCTA from "./heroCTA";
 import Dropzone from "./FileZone/Dropzone";
 import Settings from "./FileZone/settings";
 //import DransferStorage from "../../artifacts/contracts/Dransfer.sol/DransferStorage.json";
-import { useSigner } from "wagmi";
+
 const Header = (props) => {
-  const { setShowModal, showModal } = props;
-
   const [files, setFiles] = useState([]);
-
   const [handleNextClick, setHandleNextClick] = useToggle(false);
-  const [storeInWalletCheck, setStoreInWalletCheck] = useState(false);
-  const [message, setMessage] = useState("");
+  const [fileSettings, setFileSettings] = useState({
+    title: "",
+    message: "",
+    storeInWalletCheck: false,
+  });
 
   return (
     <header className="bg-dark py-5">
@@ -24,7 +24,7 @@ const Header = (props) => {
           <div className="col-md-6 text-center mb-4">
             <div className="row d-flex justify-content-center">
               <div
-                className="col-lg-9 col-xl-8 col-xxl-7"
+                className="col-sm-11 col-md-11 col-lg-9 col-xl-8 col-xxl-7"
                 style={{ paddingLeft: "12px", paddingRight: "12px" }}
               >
                 <div
@@ -36,12 +36,9 @@ const Header = (props) => {
                       //settings component
                       <Settings
                         files={files}
-                        setStoreInWalletCheck={setStoreInWalletCheck}
-                        storeInWalletCheck={storeInWalletCheck}
                         setHandleNextClick={setHandleNextClick}
-                        setShowModal={setShowModal}
-                        message={message}
-                        setMessage={setMessage}
+                        setFileSettings={setFileSettings}
+                        fileSettings={fileSettings}
                       />
                     ) : (
                       //file cacth component

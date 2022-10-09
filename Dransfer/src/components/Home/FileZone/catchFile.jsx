@@ -50,7 +50,6 @@ export const totalSize = (_files) => {
   return total;
 };
 const CatchFile = (props) => {
-  //console.log(props);
   const { maxSize, files, setFiles } = props;
 
   const onDrop = (acceptedFiles) => {

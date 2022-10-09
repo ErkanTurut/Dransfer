@@ -8,13 +8,11 @@ import {
 import Home from "./components/Home";
 import Transfers from "./components/Transfers";
 import Navigation from "./components/nav";
-import SelectWalletModal from "./components/selectWalletModal";
 
 import { ToastContainer } from "react-toastify";
 
 function Routes() {
   const [isLoading, setIsLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
 
   window.addEventListener("load", (event) => {
     setIsLoading(false);
@@ -25,11 +23,7 @@ function Routes() {
         console.log("Loading...")
       ) : (
         <Router>
-          <SelectWalletModal
-            showModal={showModal}
-            setShowModal={setShowModal}
-          />
-          <Navigation setShowModal={setShowModal} />
+          <Navigation />
           <ToastContainer
             position="bottom-left"
             autoClose={5000}
@@ -41,12 +35,7 @@ function Routes() {
             pauseOnHover
           />
           <Switch>
-            <Route
-              path="/"
-              element={
-                <Home showModal={showModal} setShowModal={setShowModal} />
-              }
-            />
+            <Route path="/" element={<Home />} />
             <Route path="/transfers" element={<Transfers />} />
           </Switch>
         </Router>

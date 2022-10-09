@@ -1,18 +1,9 @@
 import { Link } from "react-router-dom";
+import React from "react";
 
-import {
-  useAccount,
-  useConnect,
-  useEnsName,
-  useDisconnect,
-  useBalance,
-} from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const Navigation = (props) => {
-  const { setShowModal } = props;
-  const { address, isConnected } = useAccount();
-
-  const { disconnect } = useDisconnect();
   return (
     <nav
       className="navbar navbar-dark navbar-expand-md fixed-top navbar-shrink py-2"
@@ -40,25 +31,13 @@ const Navigation = (props) => {
           </span>
         </a>
         <div className="d-flex justify-content-end align-items-center">
-          {address && isConnected ? (
-            <button
-              className="btn btn-outline-success btn-sm text-nowrap d-inline d-print-none d-sm-inline d-md-none d-lg-none d-xl-none d-xxl-none"
-              type="button"
-              style={{ borderRadius: "10px", marginRight: "10px" }}
-              onClick={() => disconnect()}
-            >
-              {address.slice(0, 5) + "..." + address.slice(38, 42)}
-            </button>
-          ) : (
-            <button
-              className="btn btn-primary btn-sm text-nowrap shadow d-inline d-print-none d-sm-inline d-md-none d-lg-none d-xl-none d-xxl-none"
-              type="button"
-              onClick={() => setShowModal(true)}
-              style={{ borderRadius: "10px", marginRight: "10px" }}
-            >
-              Connect wallet
-            </button>
-          )}
+          <div
+            className="d-inline d-print-none d-sm-inline d-md-none d-lg-none d-xl-none d-xxl-none"
+            style={{ marginRight: "10px" }}
+          >
+            <ConnectButton />
+          </div>
+
           <button
             data-bs-toggle="collapse"
             className="navbar-toggler"
@@ -104,27 +83,9 @@ const Navigation = (props) => {
               </a>
             </li>
           </ul>
-          {address && isConnected ? (
-            <button
-              className="btn btn-outline-success btn-sm text-nowrap d-none d-print-inline d-sm-none d-md-inline d-lg-inline d-xl-inline d-xxl-inline"
-              type="button"
-              style={{ borderRadius: "10px" }}
-              onClick={() => disconnect()}
-            >
-              {address.slice(0, 5) + "..." + address.slice(38, 42)}
-            </button>
-          ) : (
-            <button
-              className="btn btn-primary btn-sm text-nowrap shadow d-none d-print-inline d-sm-none d-md-inline d-lg-inline d-xl-inline d-xxl-inline"
-              type="button"
-              // data-bs-target="#modal-1"
-              // data-bs-toggle="modal"
-              onClick={() => setShowModal(true)}
-              style={{ borderRadius: "10px" }}
-            >
-              Connect wallet
-            </button>
-          )}
+          <div className="d-none d-print-inline d-sm-none d-md-inline d-lg-inline d-xl-inline d-xxl-inline">
+            <ConnectButton />
+          </div>
         </div>
       </div>
     </nav>

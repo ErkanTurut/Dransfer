@@ -7,13 +7,13 @@ const HeroCTA = () => {
         <p className="fw-bold text-success mb-2 linear-wipe">
           Decentralized transfer
         </p>
-        <h2 className="fw-bold">Lorem ipsum dolor sit amet, consectetur</h2>
+        <h2 className="fw-bold">Better ingredients, better pizza </h2>
         <p className="my-3">
-          Dictumst magna ultricies justo auctor. Gravida morbi etiam id, magna
-          lacinia augue.
+          IPFS is a distributed file system that seeks to connect all computing
+          devices with the same system of files.
         </p>
         <button className="btn btn-success" type="button">
-          En apprendre plus
+          Learn more
         </button>
       </div>
     </div>

@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fileSize, totalSize } from "./catchFile";
-import {
-  useFeeData,
-  useAccount,
-  useSigner,
-  useProvider,
-  useContract,
-} from "wagmi";
-import ipfsAdd from "../../upload/ipfs";
+import { useFeeData, useSigner, useContract } from "wagmi";
+import ipfsAdd from "../assets/upload/ipfs";
 import { Buffer } from "buffer";
 import Send from "./send";
 import { toast } from "react-toastify";
@@ -17,18 +11,14 @@ import DransferStorage from "../../../artifacts/contracts/Dransfer.sol/DransferS
 const Settings = (props) => {
   const {
     files,
-    setStoreInWalletCheck,
-    storeInWalletCheck,
     setHandleNextClick,
-    setShowModal,
-    message,
-    setMessage,
+
+    setFileSettings,
+    fileSettings,
   } = props;
 
-  const sizePrice = 0;
-  const storagePrice = 0;
-
-  const { address, isConnected } = useAccount();
+  const sizePrice = 5;
+  const storagePrice = 2.45;
 
   const [hash, setHash] = useState("");
   const [progress, setProgress] = useState(0);
@@ -45,37 +35,72 @@ const Settings = (props) => {
     chainId: 1,
     formatUnits: "gwei",
     watch: true,
-    staleTime: 2_000,
+    staleTime: 60_000,
     onError(error) {
       console.log("Error", error);
     },
   });
 
-  const sending = async (storeInWalletCheck) => {
-    const obj = { message: message };
-    const buffer = Buffer.from(JSON.stringify(obj));
-    let msgFile = new File([buffer], "info.json");
-    msgFile.result = buffer;
-    msgFile.path = "info.json";
-
-    if (storeInWalletCheck) {
-      if (!isConnected) {
-        toast.warn("Please connect your wallet.");
-        setShowModal(true);
-      } else {
-        files.push(msgFile);
-        ipfsAdd(files, setHash, setProgress, setIsSent);
-      }
-    } else {
-      files.push(msgFile);
-      ipfsAdd(files, setHash, setProgress, setIsSent);
+  const sending = async (fileSettings) => {
+    const { title, message, storeInWalletCheck } = fileSettings;
+    const filesLock = true;
+    // if (message.length > 0) {
+    //   const obj = { title: title, message: message };
+    //   const buffer = Buffer.from(JSON.stringify(obj));
+    //   let msgFile = new File([buffer], "info.json");
+    //   msgFile.result = buffer;
+    //   msgFile.path = "info.json";
+    //   files.push(msgFile);
+    // }
+    const filesHash = await ipfsAdd(
+      files,
+      setProgress,
+      setIsSent,
+      false,
+      false,
+      true
+    );
+    if (filesLock) {
+      const filesHash = await ipfsAdd(
+        files,
+        setProgress,
+        setIsSent,
+        false, //wrap with directory
+        false, //pin
+        true //only hash
+      );
     }
+
+    setHash(filesHash);
+    setIsSent(true);
+    // const filesSettings = {
+    //   id: 0,
+    //   hash: filesHash,
+    //   title: title,
+    //   description: message,
+    //   locked: true,
+    //   stored: storeInWalletCheck,
+    //   //owner: "any",
+    //   //files: File[];
+    //   size: totalSize(files),
+    //   date: Date.now(),
+    // };
+    // if (storeInWalletCheck) {
+    //   if (!isConnected) {
+    //     toast.warn("Please connect your wallet.");
+    //     setShowModal(true);
+    //   } else {
+    //     ipfsAdd(files, setHash, setProgress, setIsSent);
+    //   }
+    // } else {
+    //   ipfsAdd(files, setHash, setProgress, setIsSent);
+    // }
   };
 
   useEffect(() => {
     if (isSent) {
       toast.success("File sent successfully.");
-      if (storeInWalletCheck && hash.length > 0) {
+      if (fileSettings.storeInWalletCheck && hash.length > 0) {
         contract.store(hash).then((tx) => {
           toast.success("File added to wallet.");
         });
@@ -85,7 +110,7 @@ const Settings = (props) => {
 
   return isSent != null ? (
     <Send
-      storeInWalletCheck={storeInWalletCheck}
+      fileSettings={fileSettings}
       isSent={isSent}
       hash={hash}
       progress={progress}
@@ -95,6 +120,14 @@ const Settings = (props) => {
       className="d-flex flex-column flex-grow-1 justify-content-between"
       method="post"
     >
+      {fileSettings.storeInWalletCheck ? (
+        <span className="badge bg-danger" style={{ position: "absolute" }}>
+          {Number(data.formatted.gasPrice).toFixed(2)} Gwei
+        </span>
+      ) : (
+        ""
+      )}
+
       <div
         className="d-flex flex-column flex-grow-1 justify-content-start"
         style={{ paddingBottom: "0px" }}
@@ -135,14 +168,6 @@ const Settings = (props) => {
                   </td>
                   <td>{storagePrice} €</td>
                 </tr>
-                {storeInWalletCheck ? (
-                  <tr>
-                    <td>Gas fee</td>
-                    <td>{Number(data.formatted.gasPrice).toFixed(2)} Gwei</td>
-                  </tr>
-                ) : (
-                  ""
-                )}
               </tbody>
               <tfoot
                 style={{
@@ -164,8 +189,13 @@ const Settings = (props) => {
             className="form-check-input"
             type="checkbox"
             id="formCheck-2"
-            checked={storeInWalletCheck}
-            onChange={() => setStoreInWalletCheck(!storeInWalletCheck)}
+            checked={fileSettings.storeInWalletCheck}
+            onChange={() =>
+              setFileSettings({
+                ...fileSettings,
+                storeInWalletCheck: !fileSettings.storeInWalletCheck,
+              })
+            }
           />
           <label
             className="form-check-label"
@@ -177,10 +207,27 @@ const Settings = (props) => {
         </div>
         <textarea
           className="form-control"
-          style={{ marginTop: "10px", height: "100%" }}
+          style={{
+            marginTop: "10px",
+            resize: "none",
+            height: "10px",
+          }}
+          placeholder="Title"
+          maxLength="20"
+          onChange={(e) =>
+            setFileSettings({ ...fileSettings, title: e.target.value })
+          }
+          defaultValue={fileSettings.title}
+        />
+        <textarea
+          className="form-control"
+          style={{ marginTop: "10px", height: "100%", resize: "none" }}
           placeholder="Your message"
-          onChange={(e) => setMessage(e.target.value)}
-          defaultValue={message}
+          maxLength="150"
+          onChange={(e) =>
+            setFileSettings({ ...fileSettings, message: e.target.value })
+          }
+          defaultValue={fileSettings.message}
         />
       </div>
       <div
@@ -213,7 +260,7 @@ const Settings = (props) => {
           className="btn btn-primary btn-sm d-flex justify-content-center align-items-center d-block w-100"
           type="button"
           onClick={() => {
-            sending(storeInWalletCheck);
+            sending(fileSettings);
           }}
           disabled={isSent}
         >

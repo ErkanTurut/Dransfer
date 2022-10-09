@@ -82,11 +82,11 @@ const Dropzone = (props) => {
                   </div>
                 </div>
                 <button
-                  className="btn btn-danger btn-sm d-flex d-xl-flex justify-content-xl-center align-items-xl-center"
+                  className="btn btn-danger btn-sm shadow-none d-flex d-xl-flex justify-content-xl-center align-items-xl-center"
                   type="button"
                   style={{
                     borderRadius: "8px",
-                    padding: "3px",
+                    padding: "2px",
                   }}
                   onClick={() => {
                     removeFile(data.result, files, setFiles);
@@ -111,7 +111,7 @@ const Dropzone = (props) => {
       </div>
       <div
         className="d-flex flex-grow-1 justify-content-between justify-content-xl-center align-items-xl-center"
-        style={{ paddingTop: "0px", marginTop: "15px" }}
+        style={{ paddingTop: "0px" }}
       >
         <button
           className="btn btn-primary btn-sm d-flex justify-content-center align-items-center d-block w-100"

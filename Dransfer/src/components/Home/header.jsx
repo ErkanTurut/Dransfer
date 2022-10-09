@@ -12,8 +12,9 @@ const Header = (props) => {
   const [handleNextClick, setHandleNextClick] = useToggle(false);
   const [fileSettings, setFileSettings] = useState({
     title: "",
-    message: "",
-    storeInWalletCheck: false,
+    description: "",
+    storeInWallet: false,
+    lockFile: false,
   });
 
   return (
@@ -29,7 +30,10 @@ const Header = (props) => {
               >
                 <div
                   className="card mb-0"
-                  style={{ overflow: "hidden", borderRadius: "10px" }}
+                  style={{
+                    overflow: "hidden",
+                    borderRadius: "10px",
+                  }}
                 >
                   <div className="card-body p-sm-3">
                     {handleNextClick ? (

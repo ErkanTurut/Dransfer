@@ -42,36 +42,80 @@ const Settings = (props) => {
   });
 
   const sending = async (fileSettings) => {
-    const { title, message, storeInWalletCheck } = fileSettings;
-    const filesLock = true;
-    // if (message.length > 0) {
-    //   const obj = { title: title, message: message };
-    //   const buffer = Buffer.from(JSON.stringify(obj));
-    //   let msgFile = new File([buffer], "info.json");
-    //   msgFile.result = buffer;
-    //   msgFile.path = "info.json";
-    //   files.push(msgFile);
-    // }
+    const { title, description, storeInWallet, lockFile } = fileSettings;
+    console.log(files);
+
     const filesHash = await ipfsAdd(
       files,
       setProgress,
       setIsSent,
-      false,
-      false,
-      true
+      false, //wrap with directory
+      false, //pin
+      false //only hash
     );
-    if (filesLock) {
-      const filesHash = await ipfsAdd(
-        files,
-        setProgress,
-        setIsSent,
-        false, //wrap with directory
-        false, //pin
-        true //only hash
-      );
+    console.log(filesHash);
+
+    if (!filesHash) {
+      toast.error("Error uploading files");
+      return;
     }
 
-    setHash(filesHash);
+    let filesMetadata = {
+      title: "Asset Metadata",
+      type: "application/json",
+      id: 0,
+      files: {
+        type: "string",
+        value: filesHash,
+      },
+      propeties: {
+        title: {
+          type: "string",
+          value: title,
+        },
+        description: {
+          type: "string",
+          value: description,
+        },
+      },
+      settings: {
+        storeInWallet: {
+          type: "boolean",
+          value: storeInWallet,
+        },
+        lockFile: {
+          type: "boolean",
+          value: lockFile,
+        },
+      },
+      size: totalSize(files),
+      date: Date.now(),
+    };
+    console.log(filesMetadata);
+
+    const buffer = Buffer.from(JSON.stringify(filesMetadata));
+
+    filesMetadata = new File(buffer, "filesMetadata.json");
+
+    filesMetadata.result = buffer;
+    filesMetadata.path = "filesMetadata.json";
+
+    setProgress(0);
+    const metadataHash = await ipfsAdd(
+      [filesMetadata],
+      setProgress,
+      setIsSent,
+      false, //wrap with directory
+      false, //pin
+      false //only hash
+    );
+
+    if (!metadataHash) {
+      toast.error("Error uploading metadata");
+      return;
+    }
+
+    setHash(metadataHash);
     setIsSent(true);
     // const filesSettings = {
     //   id: 0,
@@ -122,7 +166,7 @@ const Settings = (props) => {
     >
       {fileSettings.storeInWalletCheck ? (
         <span className="badge bg-danger" style={{ position: "absolute" }}>
-          {Number(data.formatted.gasPrice).toFixed(2)} Gwei
+          {/* {Number(data.formatted.gasPrice).toFixed(2)} Gwei */}
         </span>
       ) : (
         ""
@@ -137,7 +181,7 @@ const Settings = (props) => {
           <h6 className="text-muted mb-2">
             File size : <strong>{fileSize(totalSize(files))}</strong>
           </h6>
-          <div className="table-responsive">
+          {/* <div className="table-responsive">
             <table className="table table-borderless">
               <tbody>
                 <tr>
@@ -181,19 +225,41 @@ const Settings = (props) => {
                 </tr>
               </tfoot>
             </table>
-          </div>
+          </div> */}
         </div>
         <div className="form-check form-switch text-start">
           <input
             key={1}
             className="form-check-input"
             type="checkbox"
-            id="formCheck-2"
-            checked={fileSettings.storeInWalletCheck}
+            id="formCheck-1"
+            checked={fileSettings.storeInWallet}
             onChange={() =>
               setFileSettings({
                 ...fileSettings,
-                storeInWalletCheck: !fileSettings.storeInWalletCheck,
+                storeInWallet: !fileSettings.storeInWallet,
+              })
+            }
+          />
+          <label
+            className="form-check-label"
+            htmlFor="formCheck-1"
+            style={{ baground: "var(--bs-light)" }}
+          >
+            Store the file in my wallet
+          </label>
+        </div>
+        <div className="form-check form-switch text-start">
+          <input
+            key={2}
+            className="form-check-input"
+            type="checkbox"
+            id="formCheck-2"
+            checked={fileSettings.lockFile}
+            onChange={() =>
+              setFileSettings({
+                ...fileSettings,
+                lockFile: !fileSettings.lockFile,
               })
             }
           />
@@ -202,7 +268,7 @@ const Settings = (props) => {
             htmlFor="formCheck-2"
             style={{ baground: "var(--bs-light)" }}
           >
-            Store the file in my wallet
+            Lock the file
           </label>
         </div>
         <textarea
@@ -221,13 +287,13 @@ const Settings = (props) => {
         />
         <textarea
           className="form-control"
-          style={{ marginTop: "10px", height: "100%", resize: "none" }}
+          style={{ marginTop: "10px", height: "100%" }}
           placeholder="Your message"
           maxLength="150"
           onChange={(e) =>
-            setFileSettings({ ...fileSettings, message: e.target.value })
+            setFileSettings({ ...fileSettings, description: e.target.value })
           }
-          defaultValue={fileSettings.message}
+          defaultValue={fileSettings.description}
         />
       </div>
       <div

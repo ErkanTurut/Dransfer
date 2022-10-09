@@ -129,11 +129,10 @@ const ipfsAdd = async (
         // Something happened in setting up the request that triggered an Error
         console.log("Error", error.message);
       }
+      return null;
     });
   //console.log(res);
   //setIsSent(true);
-
-  //setHash(res.data[res.data.length - 1].Hash);
   console.log(res);
   return res.data[res.data.length - 1].Hash;
   //dagResolve(res.data[res.data.length - 1].Hash);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const Send = (props) => {
-  const { storeInWalletCheck, isSent, progress, hash } = props;
+  const { fileSettings, isSent, progress, hash } = props;
 
   return (
     <div
@@ -28,8 +28,8 @@ const Send = (props) => {
           </svg>
           <h2>Your link is ready</h2>
           <p className="text-start" style={{ marginBottom: "20px" }}>
-            Votre fichier a été enregistré sur votre portefeuille. Vous pouvez
-            le retrouver dans vos transferts.
+            Your file has been distributed successfully, you can share it with
+            your friends or add new versions!
           </p>
           <div className="d-flex">
             <input
@@ -85,7 +85,7 @@ const Send = (props) => {
             role="status"
             style={{ marginBottom: "10px" }}
           />
-          <h2>Your link is ready</h2>
+          <h2>Almost ready</h2>
           <p className="text-start" style={{ marginBottom: "20px" }}>
             Votre fichier a été enregistré sur votre portefeuille. Vous pouvez
             le retrouver dans vos transferts.

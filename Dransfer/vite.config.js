@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import * as path from "path";
-import nodePolyfills from "rollup-plugin-polyfill-node";
+import rollupNodePolyFill from "rollup-plugin-polyfill-node";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,7 +13,7 @@ export default defineConfig({
   plugins: [
     react(),
 
-    nodePolyfills({
+    rollupNodePolyFill({
       include: ["node_modules/**/*.js", new RegExp("node_modules/.vite/.*js")],
     }),
   ],
@@ -22,7 +22,7 @@ export default defineConfig({
     rollupOptions: {
       plugins: [
         // ↓ Needed for build
-        nodePolyfills(),
+        rollupNodePolyFill(),
       ],
     },
     // ↓ Needed for build if using WalletConnect and other providers

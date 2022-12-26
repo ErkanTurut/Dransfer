@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { fileSize, totalSize } from "./catchFile";
 import { useFeeData, useSigner, useContract } from "wagmi";
-import ipfsAdd from "../assets/upload/ipfs";
+import ipfsAdd, { dagPut, objectPut } from "../assets/upload/ipfs";
 import { Buffer } from "buffer";
 import Send from "./send";
 import { toast } from "react-toastify";
 import DransferStorage from "../../../artifacts/contracts/Dransfer.sol/DransferStorage.json";
+
 //import getCurrency from "../../utils/getCurrency";
 
 const Settings = (props) => {
-  const {
-    files,
-    setHandleNextClick,
-
-    setFileSettings,
-    fileSettings,
-  } = props;
+  const { files, setHandleNextClick, setFileSettings, fileSettings } = props;
 
   const sizePrice = 5;
   const storagePrice = 2.45;
@@ -31,35 +26,30 @@ const Settings = (props) => {
     signerOrProvider: signer,
   });
 
-  const { data } = useFeeData({
-    chainId: 1,
-    formatUnits: "gwei",
-    watch: true,
-    staleTime: 60_000,
-    onError(error) {
-      console.log("Error", error);
-    },
-  });
-
   const sending = async (fileSettings) => {
     const { title, description, storeInWallet, lockFile } = fileSettings;
-    console.log(files);
+
+    if ((storeInWallet && !signer) || (lockFile && !storeInWallet)) {
+      toast.error(
+        "You need to connect your wallet to store files in your wallet"
+      );
+      return;
+    }
 
     const filesHash = await ipfsAdd(
       files,
       setProgress,
       setIsSent,
       false, //wrap with directory
-      false, //pin
+      true, //pin
       false //only hash
     );
-    console.log(filesHash);
 
     if (!filesHash) {
       toast.error("Error uploading files");
       return;
     }
-
+    /*
     let filesMetadata = {
       title: "Asset Metadata",
       type: "application/json",
@@ -91,54 +81,30 @@ const Settings = (props) => {
       size: totalSize(files),
       date: Date.now(),
     };
-    console.log(filesMetadata);
 
     const buffer = Buffer.from(JSON.stringify(filesMetadata));
-
     filesMetadata = new File(buffer, "filesMetadata.json");
-
     filesMetadata.result = buffer;
     filesMetadata.path = "filesMetadata.json";
 
-    setProgress(0);
-    const metadataHash = await ipfsAdd(
+    const metadataHash = await dagPut(
       [filesMetadata],
       setProgress,
-      setIsSent,
-      false, //wrap with directory
-      false, //pin
-      false //only hash
+      setIsSent
+      // false, //wrap with directory
+      // false, //pin
+      // false //only hash
     );
 
     if (!metadataHash) {
       toast.error("Error uploading metadata");
       return;
     }
+    */
 
-    setHash(metadataHash);
+    setProgress(0);
+    setHash(filesHash);
     setIsSent(true);
-    // const filesSettings = {
-    //   id: 0,
-    //   hash: filesHash,
-    //   title: title,
-    //   description: message,
-    //   locked: true,
-    //   stored: storeInWalletCheck,
-    //   //owner: "any",
-    //   //files: File[];
-    //   size: totalSize(files),
-    //   date: Date.now(),
-    // };
-    // if (storeInWalletCheck) {
-    //   if (!isConnected) {
-    //     toast.warn("Please connect your wallet.");
-    //     setShowModal(true);
-    //   } else {
-    //     ipfsAdd(files, setHash, setProgress, setIsSent);
-    //   }
-    // } else {
-    //   ipfsAdd(files, setHash, setProgress, setIsSent);
-    // }
   };
 
   useEffect(() => {
@@ -234,12 +200,13 @@ const Settings = (props) => {
             type="checkbox"
             id="formCheck-1"
             checked={fileSettings.storeInWallet}
-            onChange={() =>
+            onChange={() => {
               setFileSettings({
                 ...fileSettings,
                 storeInWallet: !fileSettings.storeInWallet,
-              })
-            }
+                lockFile: false,
+              });
+            }}
           />
           <label
             className="form-check-label"
@@ -262,6 +229,7 @@ const Settings = (props) => {
                 lockFile: !fileSettings.lockFile,
               })
             }
+            disabled={!fileSettings.storeInWallet}
           />
           <label
             className="form-check-label"

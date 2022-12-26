@@ -17,6 +17,7 @@ function Routes() {
   window.addEventListener("load", (event) => {
     setIsLoading(false);
   });
+
   return (
     <>
       {isLoading ? (
@@ -29,6 +30,7 @@ function Routes() {
             autoClose={5000}
             hideProgressBar={false}
             newestOnTop={false}
+            pauseOnFocusLoss={false}
             closeOnClick
             rtl={false}
             draggable

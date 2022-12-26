@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { WagmiConfig, createClient, chain, configureChains } from "wagmi";
-import { infuraProvider } from "wagmi/providers/infura";
+import { alchemyProvider } from "wagmi/providers/alchemy";
 
 import {
   RainbowKitProvider,
@@ -26,7 +26,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 const { provider, webSocketProvider, chains } = configureChains(
   [chain.polygon],
-  [infuraProvider({ apiKey: import.meta.env.VITE_INFURA_KEY })]
+  [alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_KEY })]
 );
 
 const connectors = connectorsForWallets([
